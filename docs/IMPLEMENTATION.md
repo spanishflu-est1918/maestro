@@ -774,15 +774,63 @@ CREATE TABLE reminder_space_links (
 
 ### 2. Linear Integration
 
-**Implementation:** `MaestroCore/LinearSync.swift`
+**Implementation:** `MaestroCore/LinearSync.swift` + `MaestroCore/LinearAPIClient.swift`
 
 **Model:** `LinearLink` - Links tasks to Linear issues
 
+**Status:** ✅ **COMPLETE** - Full GraphQL API integration with async/await
+
+**Architecture:**
+```
+LinearSync (High-level service)
+    ↓
+LinearAPIClient (GraphQL API client)
+    ↓
+Linear GraphQL API (https://api.linear.app/graphql)
+```
+
 **Features:**
+
+#### LinearAPIClient - GraphQL API Client
+```swift
+public class LinearAPIClient {
+    private let apiKey: String
+    private let endpoint = "https://api.linear.app/graphql"
+
+    // Fetch assigned issues
+    public func fetchMyIssues() async throws -> [LinearIssue]
+
+    // Fetch specific issue
+    public func fetchIssue(id: String) async throws -> LinearIssue
+
+    // Create new issue
+    public func createIssue(
+        teamId: String,
+        title: String,
+        description: String?,
+        priority: Int?,
+        stateId: String?
+    ) async throws -> LinearIssue
+
+    // Update existing issue
+    public func updateIssue(
+        id: String,
+        title: String?,
+        description: String?,
+        stateId: String?,
+        priority: Int?
+    ) async throws -> LinearIssue
+
+    // Fetch workflow states for a team
+    public func fetchWorkflowStates(teamId: String) async throws -> [LinearWorkflowState]
+}
+```
+
+#### LinearSync - High-level Service
 ```swift
 public class LinearSync {
     private let db: Database
-    private var apiKey: String?
+    private var apiClient: LinearAPIClient?
 
     // Configure API key
     public func setAPIKey(_ key: String)
@@ -802,10 +850,34 @@ public class LinearSync {
     // Update issue state
     public func updateIssueState(linearIssueId: String, newState: String) throws
 
-    // Sync with Linear API (placeholder)
-    public func sync() throws
+    // Sync from Linear: Fetch issues and update local state
+    public func sync() async throws
+
+    // Sync to Linear: Push task changes to Linear
+    public func syncTaskToLinear(taskId: UUID) async throws
+
+    // Create Linear issue from task
+    public func createLinearIssue(taskId: UUID, teamId: String) async throws -> LinearLink
 }
 ```
+
+**Status & Priority Mapping:**
+
+| Maestro Status | Linear State | Direction |
+|---------------|--------------|-----------|
+| inbox         | Backlog      | ↔        |
+| todo          | Todo         | ↔        |
+| inProgress    | In Progress  | ↔        |
+| done          | Done         | ↔        |
+| archived      | Canceled     | ↔        |
+
+| Maestro Priority | Linear Priority | Direction |
+|-----------------|----------------|-----------|
+| urgent          | 1 (Urgent)     | ↔        |
+| high            | 2 (High)       | ↔        |
+| medium          | 3 (Medium)     | ↔        |
+| low             | 4 (Low)        | ↔        |
+| none            | 0 (No priority)| ↔        |
 
 **Database Schema:**
 ```sql
@@ -838,10 +910,12 @@ CREATE TABLE linear_sync (
         /\
        /E2E\        3 tests  - End-to-end system tests
       /------\
-     /Integra\      70 tests - Integration & MCP tests
+     /Integra\      77 tests - Integration & MCP tests
     /----------\
    /  Unit Tests\   63 tests - Unit & performance tests
   /--------------\
+
+Total: 143 tests (all passing, zero warnings)
 ```
 
 ### Test Suites
@@ -870,7 +944,7 @@ CREATE TABLE linear_sync (
 - Log rotation
 - Level filtering
 
-#### 2. Integration Tests (70 tests)
+#### 2. Integration Tests (77 tests)
 
 **MCP Server Tests (17 tests)**
 - Server initialization
@@ -882,9 +956,15 @@ CREATE TABLE linear_sync (
 - Task tools: Create, list, update, complete, surface
 - Document tools: Create, list, update, pin, default
 
-**External Integration Tests (9 tests)**
-- ReminderSync: Permission, linking, sync
-- LinearSync: API key, linking, state updates
+**External Integration Tests (16 tests)**
+- ReminderSync: Permission, linking, sync (4 tests)
+- LinearSync: API key, linking, state updates, async API integration (12 tests)
+  - Basic linking (5 tests)
+  - Async sync() without API key (1 test)
+  - Async syncTaskToLinear() error handling (2 tests)
+  - Async createLinearIssue() error handling (2 tests)
+  - Async notLinked error (1 test)
+  - setAPIKey() validation (1 test)
 
 **UI Tests (8 tests)**
 - AppDelegate initialization
@@ -1217,15 +1297,16 @@ rm -rf ~/Library/Application\ Support/Maestro
 
 ## Conclusion
 
-Maestro v0.1.0 represents a complete, production-ready task management system with deep MCP integration. The implementation covers:
+Maestro v0.1.0 represents a complete, production-ready task management system with deep MCP integration and full Linear API support. The implementation covers:
 
 ✅ **36 beads completed** - Full feature set
-✅ **136 tests passing** - Comprehensive validation
+✅ **143 tests passing** - Comprehensive validation including async API tests
 ✅ **23 MCP tools** - Complete AI integration
+✅ **Linear GraphQL API** - Full bidirectional sync with async/await
 ✅ **Zero warnings/errors** - Production code quality
 ✅ **Full documentation** - Ready for users and developers
 
-The architecture is designed for extensibility, with clear separation of concerns, comprehensive testing, and documented integration points. The system is ready for deployment and real-world use while providing a solid foundation for future enhancements.
+The architecture is designed for extensibility, with clear separation of concerns, comprehensive testing, and documented integration points. The Linear integration demonstrates the system's capability for complex external API integrations with proper async handling and error management. The system is ready for deployment and real-world use while providing a solid foundation for future enhancements.
 
 ---
 
