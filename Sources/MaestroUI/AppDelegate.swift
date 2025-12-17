@@ -9,6 +9,8 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     private var quickView: QuickViewPanel?
     private var db: Database?
     private var viewerWindow: ViewerWindow?
+    private var updateTimer: Timer?
+    private var calculator: MenuBarStateCalculator?
 
     public override init() {
         super.init()
@@ -19,6 +21,11 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             db = Database(path: "~/Library/Application Support/Maestro/maestro.db")
             try db?.connect()
+            
+            // Initialize calculator
+            if let db = db {
+                calculator = MenuBarStateCalculator(database: db)
+            }
         } catch {
             NSLog("Failed to initialize database: \(error)")
         }
@@ -40,8 +47,68 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         // Set button action to toggle popover
         button.action = #selector(togglePopover)
         button.target = self
+        
+        // Update menu bar state immediately
+        updateMenuBarState()
+        
+        // Start timer to update state every 30 seconds
+        updateTimer = Timer.scheduledTimer(
+            timeInterval: 30,
+            target: self,
+            selector: #selector(updateMenuBarState),
+            userInfo: nil,
+            repeats: true
+        )
 
         NSLog("Maestro menu bar app started")
+    }
+    
+    @objc private func updateMenuBarState() {
+        guard let calculator = calculator else { return }
+        
+        do {
+            let state = try calculator.calculate()
+            
+            // Update icon color based on state
+            updateIconColor(state.color)
+            
+            // Update badge count
+            if state.badgeCount > 0 {
+                statusItem?.button?.title = "\(state.badgeCount)"
+            } else {
+                statusItem?.button?.title = ""
+            }
+            
+            NSLog("Menu bar state updated: \(state.color.rawValue), badge: \(state.badgeCount)")
+        } catch {
+            NSLog("Failed to update menu bar state: \(error)")
+        }
+    }
+    
+    private func updateIconColor(_ color: MenuBarColor) {
+        guard let button = statusItem?.button else { return }
+        
+        // Create colored icon based on state
+        let symbolName: String
+        switch color {
+        case .clear:
+            symbolName = "checklist"
+            button.contentTintColor = .systemGreen
+        case .attention:
+            symbolName = "exclamationmark.circle"
+            button.contentTintColor = .systemYellow
+        case .input:
+            symbolName = "hand.raised"
+            button.contentTintColor = .systemOrange
+        case .urgent:
+            symbolName = "exclamationmark.triangle"
+            button.contentTintColor = .systemRed
+        }
+        
+        if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "Maestro") {
+            image.isTemplate = true
+            button.image = image
+        }
     }
 
     @objc func togglePopover() {

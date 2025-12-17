@@ -2,16 +2,18 @@ import Cocoa
 import MaestroCore
 
 /// Quick View Panel - Dropdown panel from menu bar
-/// Shows active agents (placeholder), recent spaces, and due tasks
+/// Shows status summary, recent spaces, and due tasks
 public class QuickViewPanel: NSViewController {
     private let scrollView = NSScrollView()
     private let contentView = NSStackView()
     private weak var appDelegate: AppDelegate?
     private let db: Database
+    private var calculator: MenuBarStateCalculator?
 
     public init(database: Database, appDelegate: AppDelegate) {
         self.db = database
         self.appDelegate = appDelegate
+        self.calculator = MenuBarStateCalculator(database: database)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -39,21 +41,68 @@ public class QuickViewPanel: NSViewController {
         contentView.edgeInsets = NSEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
 
         // Add sections
-        addAgentsSection()
+        addStatusSummary()
         addSpacesSection()
         addTasksSection()
         addViewerButton()
     }
 
-    private func addAgentsSection() {
-        let header = NSTextField(labelWithString: "Active Agents")
+    private func addStatusSummary() {
+        let header = NSTextField(labelWithString: "Status")
         header.font = NSFont.boldSystemFont(ofSize: 13)
         contentView.addArrangedSubview(header)
 
-        let placeholder = NSTextField(labelWithString: "No active agents")
-        placeholder.font = NSFont.systemFont(ofSize: 11)
-        placeholder.textColor = .secondaryLabelColor
-        contentView.addArrangedSubview(placeholder)
+        do {
+            guard let calculator = calculator else { return }
+            let state = try calculator.calculate()
+            
+            // Create summary text
+            var summaryParts: [String] = []
+            
+            if state.summary.overdueTaskCount > 0 {
+                summaryParts.append("\(state.summary.overdueTaskCount) overdue")
+            }
+            
+            if state.summary.staleTaskCount > 0 {
+                summaryParts.append("\(state.summary.staleTaskCount) stale")
+            }
+            
+            if state.summary.agentsNeedingInputCount > 0 {
+                summaryParts.append("\(state.summary.agentsNeedingInputCount) agent waiting")
+            }
+            
+            if state.summary.activeAgentCount > 0 {
+                summaryParts.append("\(state.summary.activeAgentCount) active agents")
+            }
+            
+            if state.summary.linearDoneCount > 0 {
+                summaryParts.append("Linear: \(state.summary.linearDoneCount) done")
+            }
+            
+            let summaryText = summaryParts.isEmpty ? "All clear ✓" : summaryParts.joined(separator: " • ")
+            
+            let summary = NSTextField(labelWithString: summaryText)
+            summary.font = NSFont.systemFont(ofSize: 11)
+            
+            // Color based on state
+            switch state.color {
+            case .clear:
+                summary.textColor = .systemGreen
+            case .attention:
+                summary.textColor = .systemYellow
+            case .input:
+                summary.textColor = .systemOrange
+            case .urgent:
+                summary.textColor = .systemRed
+            }
+            
+            contentView.addArrangedSubview(summary)
+        } catch {
+            let errorLabel = NSTextField(labelWithString: "Error loading status")
+            errorLabel.textColor = .systemRed
+            errorLabel.font = NSFont.systemFont(ofSize: 11)
+            contentView.addArrangedSubview(errorLabel)
+        }
     }
 
     private func addSpacesSection() {
