@@ -21,10 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### MCP Server Integration
 - MCP server daemon with stdio transport
-- 23 MCP tools for spaces, tasks, and documents
+- 30 MCP tools for spaces, tasks, documents, and agent monitoring
 - Space management tools (list, get, create, update, archive, delete)
 - Task management tools (list, get, create, update, complete, archive, delete, surfaced)
 - Document management tools (list, get, create, update, pin, unpin, delete, default)
+- Agent monitoring tools (start session, end session, log activity, get session, list sessions, list activities, get metrics)
 - Comprehensive error handling with detailed error messages
 - Tool parameter validation
 
@@ -61,8 +62,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - LinearSync service with async/await API calls
   - Error handling for API key validation and task linking
 
+- **Agent Monitoring**
+  - Track AI agent (Claude Code, Codex) activity and performance
+  - AgentSession model for tracking work sessions
+  - AgentActivity model for detailed activity logs
+  - AgentMonitor service with session lifecycle management
+  - Activity logging with automatic counter updates
+  - Performance metrics calculation (sessions, activities, duration, tasks per session)
+  - Support for metadata on sessions and activities
+  - Cleanup utility for old session data
+
 #### Testing
-- 143 comprehensive tests (unit, integration, E2E, async)
+- 156 comprehensive tests (unit, integration, E2E, async)
 - SpaceStore tests (10 tests)
 - TaskStore tests (10 tests)
 - DocumentStore tests (5 tests)
@@ -79,6 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Viewer window tests (2 tests)
 - ReminderSync tests (4 tests)
 - LinearSync tests (12 tests - including async API tests)
+- AgentMonitor tests (13 tests)
 - E2E system tests (3 tests)
 - Performance benchmarks (10 tests)
 
@@ -116,6 +128,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `linear_sync` table for Linear issue linking
 - Unique constraint on linear_issue_id
 - Indexes on task_id and linear_issue_id
+
+#### v4 - Agent Monitoring
+- `agent_sessions` table for agent work session tracking
+- `agent_activity` table for detailed activity logs
+- Activity counters (total_activities, tasks_created, tasks_updated, tasks_completed, spaces_created, documents_created)
+- Foreign key cascade from agent_activity to agent_sessions
+- Indexes on session_id, agent_name, activity_type, resource_type, and timestamp
 
 ### Technical Details
 
@@ -183,9 +202,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version History
 
 - **0.1.0** (2025-12-17) - Initial release with core features
-  - 126 tests passing
-  - 23 MCP tools
-  - EventKit and Linear integrations
+  - 156 tests passing
+  - 30 MCP tools
+  - EventKit, Linear, and Agent Monitoring integrations
   - Full documentation
 
 ---

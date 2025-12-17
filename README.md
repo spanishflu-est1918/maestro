@@ -5,8 +5,9 @@ A native macOS task management system with MCP server integration, Linear sync, 
 ## Features
 
 - **Native macOS Menu Bar App** - Quick access to spaces, tasks, and documents
-- **MCP Server Integration** - Control Maestro via Anthropic's Model Context Protocol
-- **Linear Sync** - Link Maestro tasks with Linear issues
+- **MCP Server Integration** - Control Maestro via Anthropic's Model Context Protocol with 30 tools
+- **Agent Monitoring** - Track AI agent (Claude Code, Codex) activity and performance metrics
+- **Linear Sync** - Link Maestro tasks with Linear issues via GraphQL API
 - **EventKit Integration** - Sync with Reminders.app
 - **Space-Based Organization** - Organize tasks and documents into spaces with filesystem paths
 - **Task Surfacing Algorithm** - Intelligent task prioritization based on status and priority
@@ -161,6 +162,16 @@ Available via any MCP-compatible client:
 - `maestro_delete_document` - Delete document
 - `maestro_get_default_document` - Get space's default document
 - `maestro_set_default_document` - Set space's default document
+
+#### Agent Monitoring
+
+- `maestro_start_agent_session` - Start a new agent work session
+- `maestro_end_agent_session` - End an active agent session
+- `maestro_log_agent_activity` - Log an agent activity
+- `maestro_get_agent_session` - Get session by ID
+- `maestro_list_agent_sessions` - List agent sessions with filters
+- `maestro_list_agent_activities` - List agent activities
+- `maestro_get_agent_metrics` - Get performance metrics for an agent
 
 ## Linear Integration
 
@@ -336,7 +347,7 @@ swift test -v
 
 ### Test Coverage
 
-- 143 tests covering all major functionality
+- 156 tests covering all major functionality
 - Unit tests for all stores and models
 - Integration tests for MCP tools
 - End-to-end system tests

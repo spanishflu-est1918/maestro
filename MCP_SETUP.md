@@ -2,7 +2,7 @@
 
 ## What is This?
 
-Maestro provides an MCP (Model Context Protocol) server that exposes 23 tools for managing spaces, tasks, and documents. AI assistants like Claude can connect to this server to organize your work.
+Maestro provides an MCP (Model Context Protocol) server that exposes 30 tools for managing spaces, tasks, documents, and agent monitoring. AI assistants like Claude can connect to this server to organize your work.
 
 ## Building the Server
 
@@ -84,6 +84,13 @@ In a new Claude Code session, you should see maestro tools available:
 - `maestro_delete_document`
 - `maestro_get_default_document`
 - `maestro_set_default_document`
+- `maestro_start_agent_session`
+- `maestro_end_agent_session`
+- `maestro_log_agent_activity`
+- `maestro_get_agent_session`
+- `maestro_list_agent_sessions`
+- `maestro_list_agent_activities`
+- `maestro_get_agent_metrics`
 
 ## Testing the Tools
 
