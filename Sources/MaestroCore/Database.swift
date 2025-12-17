@@ -133,6 +133,64 @@ public class Database {
                 CREATE INDEX idx_tasks_surfacing ON tasks(status, priority, position)
             """)
         }
+
+        // v2: EventKit integration - reminder_space_links table
+        migrator.registerMigration("v2") { db in
+            try db.execute(sql: """
+                CREATE TABLE reminder_space_links (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    space_id TEXT NOT NULL,
+                    reminder_id TEXT NOT NULL,
+                    reminder_title TEXT NOT NULL,
+                    reminder_list_id TEXT NOT NULL,
+                    reminder_list_name TEXT NOT NULL,
+                    is_completed INTEGER NOT NULL DEFAULT 0,
+                    due_date TEXT,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (space_id) REFERENCES spaces(id) ON DELETE CASCADE,
+                    UNIQUE(reminder_id)
+                )
+            """)
+
+            // Create index on space_id for quick lookup
+            try db.execute(sql: """
+                CREATE INDEX idx_reminder_links_space_id ON reminder_space_links(space_id)
+            """)
+
+            // Create index on reminder_id for reverse lookup
+            try db.execute(sql: """
+                CREATE INDEX idx_reminder_links_reminder_id ON reminder_space_links(reminder_id)
+            """)
+        }
+
+        // v3: Linear integration - linear_sync table
+        migrator.registerMigration("v3") { db in
+            try db.execute(sql: """
+                CREATE TABLE linear_sync (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    task_id TEXT NOT NULL,
+                    linear_issue_id TEXT NOT NULL,
+                    linear_issue_key TEXT NOT NULL,
+                    linear_team_id TEXT NOT NULL,
+                    linear_state TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+                    UNIQUE(linear_issue_id)
+                )
+            """)
+
+            // Create index on task_id for quick lookup
+            try db.execute(sql: """
+                CREATE INDEX idx_linear_sync_task_id ON linear_sync(task_id)
+            """)
+
+            // Create index on linear_issue_id for reverse lookup
+            try db.execute(sql: """
+                CREATE INDEX idx_linear_sync_linear_issue_id ON linear_sync(linear_issue_id)
+            """)
+        }
     }
 
     // MARK: - Connection Management

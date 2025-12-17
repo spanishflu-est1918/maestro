@@ -10,7 +10,10 @@ let package = Package(
     ],
     products: [
         .executable(name: "maestrod", targets: ["Maestro"]),
-        .library(name: "MaestroCore", targets: ["MaestroCore"])
+        .executable(name: "maestro-app", targets: ["MaestroApp"]),
+        .executable(name: "testmcp", targets: ["TestMCP"]),
+        .library(name: "MaestroCore", targets: ["MaestroCore"]),
+        .library(name: "MaestroUI", targets: ["MaestroUI"])
     ],
     dependencies: [
         // GRDB - SQLite toolkit with migrations, type-safe queries
@@ -27,11 +30,35 @@ let package = Package(
             ]
         ),
 
+        // UI library - AppKit components for menu bar app
+        .target(
+            name: "MaestroUI",
+            dependencies: [
+                "MaestroCore"
+            ]
+        ),
+
         // Executable - daemon, MCP server, menu bar app
         .executableTarget(
             name: "Maestro",
             dependencies: [
                 "MaestroCore",
+                .product(name: "MCP", package: "swift-sdk")
+            ]
+        ),
+
+        // Menu bar application
+        .executableTarget(
+            name: "MaestroApp",
+            dependencies: [
+                "MaestroUI"
+            ]
+        ),
+
+        // Test MCP server - minimal example
+        .executableTarget(
+            name: "TestMCP",
+            dependencies: [
                 .product(name: "MCP", package: "swift-sdk")
             ]
         ),
@@ -46,6 +73,7 @@ let package = Package(
             dependencies: [
                 "Maestro",
                 "MaestroCore",
+                "MaestroUI",
                 .product(name: "MCP", package: "swift-sdk")
             ]
         )

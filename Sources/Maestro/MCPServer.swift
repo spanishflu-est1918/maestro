@@ -10,9 +10,13 @@ public final class MaestroMCPServer {
     let taskStore: TaskStore
     let documentStore: DocumentStore
 
-    public init() throws {
+    public init(databasePath: String? = nil) throws {
         // Initialize database
-        db = Database()
+        if let path = databasePath {
+            db = Database(path: path)
+        } else {
+            db = Database() // In-memory
+        }
         try db.connect()
 
         // Initialize stores

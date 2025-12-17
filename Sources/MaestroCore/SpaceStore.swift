@@ -168,6 +168,59 @@ public class SpaceStore {
         }
     }
 
+    // MARK: - Path Matching
+
+    /// Find spaces that match a filesystem path
+    /// - Parameters:
+    ///   - path: The filesystem path to match
+    ///   - includeArchived: Whether to include archived spaces
+    /// - Returns: Array of spaces whose path matches or is a parent of the given path
+    /// - Throws: Database errors
+    public func findByPath(_ path: String, includeArchived: Bool = false) throws -> [Space] {
+        let normalizedPath = normalizePath(path)
+
+        return try db.read { db in
+            let archivedFilter = includeArchived ? "" : "AND archived = 0"
+
+            let sql = """
+                SELECT * FROM spaces
+                WHERE path IS NOT NULL
+                AND (
+                    path = ?
+                    OR ? LIKE path || '/%'
+                )
+                \(archivedFilter)
+                ORDER BY length(path) DESC, last_active_at DESC
+            """
+
+            return try Space.fetchAll(db, sql: sql, arguments: [normalizedPath, normalizedPath])
+        }
+    }
+
+    /// Infer which space a path belongs to
+    /// Returns the space with the longest matching path (closest parent)
+    /// - Parameters:
+    ///   - path: The filesystem path
+    ///   - includeArchived: Whether to include archived spaces
+    /// - Returns: The best matching space, or nil if no match
+    /// - Throws: Database errors
+    public func inferSpace(forPath path: String, includeArchived: Bool = false) throws -> Space? {
+        let matches = try findByPath(path, includeArchived: includeArchived)
+        // findByPath already orders by path length DESC, so first match is best
+        return matches.first
+    }
+
+    /// Normalize a filesystem path for consistent matching
+    /// - Parameter path: The path to normalize
+    /// - Returns: Normalized path (expanded, resolved symlinks, no trailing slash)
+    private func normalizePath(_ path: String) -> String {
+        let url = URL(fileURLWithPath: path)
+        let expanded = url.standardized.path
+        return expanded.hasSuffix("/") && expanded != "/"
+            ? String(expanded.dropLast())
+            : expanded
+    }
+
     // MARK: - Update
 
     /// Update a space
