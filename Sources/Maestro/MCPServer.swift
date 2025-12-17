@@ -25,8 +25,6 @@ public final class MaestroMCPServer {
             name: "maestro",
             version: "0.1.0",
             capabilities: .init(
-                prompts: nil,
-                resources: nil,
                 tools: .init(listChanged: true)
             )
         )
