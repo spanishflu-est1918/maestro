@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "maestro": {
+      "command": "/Users/gorkolas/Documents/www/maestro/.build/release/maestrod",
+      "env": {
+        "MAESTRO_DB_PATH": "/Users/gorkolas/Documents/www/maestro/maestro.db"
+      }
+    }
+  }
+}
