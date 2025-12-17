@@ -1,11 +1,11 @@
 import XCTest
-import SQLite
+import GRDB
 @testable import MaestroCore
 
 /// Base test case class for all Maestro tests
 /// Provides in-memory SQLite database for each test
 class MaestroTestCase: XCTestCase {
-    var db: Connection!
+    var db: DatabaseQueue!
     var dbPath: String!
 
     override func setUp() async throws {
@@ -13,7 +13,7 @@ class MaestroTestCase: XCTestCase {
 
         // Create in-memory database for each test
         // This ensures tests are isolated and fast
-        db = try Connection(.inMemory)
+        db = try DatabaseQueue()
         dbPath = ":memory:"
 
         print("✓ Test database initialized (in-memory)")
@@ -31,25 +31,36 @@ class MaestroTestCase: XCTestCase {
 
     /// Execute raw SQL for test setup
     func executeSQL(_ sql: String) throws {
-        try db.execute(sql)
+        try db.write { db in
+            try db.execute(sql: sql)
+        }
     }
 
     /// Verify a table exists in the database
     func assertTableExists(_ tableName: String, file: StaticString = #file, line: UInt = #line) throws {
-        let query = """
-        SELECT name FROM sqlite_master
-        WHERE type='table' AND name=?
-        """
-        let stmt = try db.prepare(query)
-        let exists = try stmt.scalar(tableName) != nil
-        XCTAssertTrue(exists, "Table '\(tableName)' should exist", file: file, line: line)
+        let exists = try db.read { db in
+            try Bool.fetchOne(db, sql: """
+                SELECT EXISTS(
+                    SELECT 1 FROM sqlite_master
+                    WHERE type='table' AND name=?
+                )
+                """, arguments: [tableName])
+        }
+        XCTAssertTrue(exists ?? false, "Table '\(tableName)' should exist", file: file, line: line)
     }
 
     /// Get row count from a table
     func rowCount(in tableName: String) throws -> Int {
-        let query = "SELECT COUNT(*) FROM \(tableName)"
-        let stmt = try db.prepare(query)
-        guard let row = try stmt.scalar() else { return 0 }
-        return row as? Int64 as? Int ?? 0
+        let count = try db.read { db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM \(tableName)")
+        }
+        return count ?? 0
+    }
+
+    /// Execute a scalar query
+    func scalar(_ sql: String) throws -> DatabaseValue? {
+        return try db.read { db in
+            try DatabaseValue.fetchOne(db, sql: sql)
+        }
     }
 }

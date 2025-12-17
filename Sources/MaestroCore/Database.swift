@@ -1,10 +1,10 @@
 import Foundation
-import SQLite
+import GRDB
 
-/// Database connection manager
+/// Database connection manager using GRDB
 /// Handles SQLite connection lifecycle, transactions, and error handling
 public class Database {
-    private var connection: Connection?
+    private var dbQueue: DatabaseQueue?
     private let path: String
 
     public enum DatabaseError: Error, LocalizedError {
@@ -47,7 +47,7 @@ public class Database {
     public func connect() throws {
         do {
             if path == ":memory:" {
-                connection = try Connection(.inMemory)
+                dbQueue = try DatabaseQueue()
             } else {
                 // Ensure parent directory exists
                 let url = URL(fileURLWithPath: path)
@@ -57,11 +57,13 @@ public class Database {
                     withIntermediateDirectories: true
                 )
 
-                connection = try Connection(path)
+                dbQueue = try DatabaseQueue(path: path)
             }
 
             // Enable foreign keys
-            try connection?.execute("PRAGMA foreign_keys = ON")
+            try dbQueue?.write { db in
+                try db.execute(sql: "PRAGMA foreign_keys = ON")
+            }
 
             print("✓ Database connected: \(path)")
         } catch {
@@ -71,7 +73,7 @@ public class Database {
 
     /// Close database connection
     public func close() {
-        connection = nil
+        dbQueue = nil
         print("✓ Database closed")
     }
 
@@ -81,46 +83,35 @@ public class Database {
         try connect()
     }
 
-    /// Get current connection
+    /// Get current database queue
     /// - Throws: DatabaseError.notConnected if not connected
-    public func getConnection() throws -> Connection {
-        guard let conn = connection else {
+    public func getQueue() throws -> DatabaseQueue {
+        guard let queue = dbQueue else {
             throw DatabaseError.notConnected
         }
-        return conn
+        return queue
     }
 
     /// Check if database is connected
     public var isConnected: Bool {
-        return connection != nil
+        return dbQueue != nil
     }
 
     // MARK: - Transactions
 
     /// Execute a block of code within a transaction
-    /// - Parameter block: Code to execute within transaction
+    /// - Parameter block: Code to execute within transaction (receives GRDB.Database)
     /// - Throws: DatabaseError.transactionFailed or errors from block
-    public func transaction(_ block: () throws -> Void) throws {
-        let conn = try getConnection()
+    public func transaction(_ block: @escaping (GRDB.Database) throws -> Void) throws {
+        let queue = try getQueue()
 
         do {
-            try conn.transaction {
-                try block()
+            // queue.write already starts a transaction
+            try queue.write { db in
+                try block(db)
             }
         } catch {
             throw DatabaseError.transactionFailed(error.localizedDescription)
-        }
-    }
-
-    /// Execute a block with a savepoint (nested transaction)
-    /// - Parameters:
-    ///   - name: Savepoint name
-    ///   - block: Code to execute within savepoint
-    public func savepoint(_ name: String, _ block: () throws -> Void) throws {
-        let conn = try getConnection()
-
-        try conn.savepoint(name) {
-            try block()
         }
     }
 
@@ -130,20 +121,43 @@ public class Database {
     /// - Parameter sql: SQL statement to execute
     /// - Throws: DatabaseError.queryFailed if execution fails
     public func execute(_ sql: String) throws {
-        let conn = try getConnection()
+        let queue = try getQueue()
 
         do {
-            try conn.execute(sql)
+            try queue.write { db in
+                try db.execute(sql: sql)
+            }
         } catch {
             throw DatabaseError.queryFailed(error.localizedDescription)
         }
     }
 
-    /// Prepare a SQL statement
-    /// - Parameter query: SQL query
-    /// - Returns: Prepared statement
-    public func prepare(_ query: String) throws -> Statement {
-        let conn = try getConnection()
-        return try conn.prepare(query)
+    /// Execute a read query and return a single scalar value
+    /// - Parameter sql: SQL query that returns a single value
+    /// - Returns: The scalar value, or nil if no result
+    public func scalar(_ sql: String) throws -> DatabaseValue? {
+        let queue = try getQueue()
+
+        do {
+            return try queue.read { db in
+                try DatabaseValue.fetchOne(db, sql: sql)
+            }
+        } catch {
+            throw DatabaseError.queryFailed(error.localizedDescription)
+        }
+    }
+
+    /// Execute a write operation with direct database access
+    /// - Parameter block: Code to execute with database access
+    public func write<T>(_ block: @escaping (GRDB.Database) throws -> T) throws -> T {
+        let queue = try getQueue()
+        return try queue.write(block)
+    }
+
+    /// Execute a read operation with direct database access
+    /// - Parameter block: Code to execute with database access
+    public func read<T>(_ block: @escaping (GRDB.Database) throws -> T) throws -> T {
+        let queue = try getQueue()
+        return try queue.read(block)
     }
 }

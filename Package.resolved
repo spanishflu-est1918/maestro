@@ -1,22 +1,13 @@
 {
-  "originHash" : "e80ae76c4f368073d2cbeaa699181440e8d10567e4fb25e4e7ae5aee0852809a",
+  "originHash" : "c480244039e39781017f81cd5d343b2bdd6d7eccd486b6eb9678e95cefee33b9",
   "pins" : [
     {
-      "identity" : "sqlite.swift",
+      "identity" : "grdb.swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/stephencelis/SQLite.swift.git",
+      "location" : "https://github.com/groue/GRDB.swift.git",
       "state" : {
-        "revision" : "392dd6058624d9f6c5b4c769d165ddd8c7293394",
-        "version" : "0.15.4"
-      }
-    },
-    {
-      "identity" : "swift-toolchain-sqlite",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-toolchain-sqlite",
-      "state" : {
-        "revision" : "b626d3002773b1a1304166643e7f118f724b2132",
-        "version" : "1.0.4"
+        "revision" : "2cf6c756e1e5ef6901ebae16576a7e4e4b834622",
+        "version" : "6.29.3"
       }
     }
   ],

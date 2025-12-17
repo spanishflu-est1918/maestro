@@ -39,24 +39,24 @@ final class MaestroTests: MaestroTestCase {
         try assertTableExists("test_table")
     }
 
-    // TODO: Fix rowCount test - INSERT statements need different API
-    // func testRowCount() async throws {
-    //     // Create test table and insert data
-    //     try executeSQL("CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT)")
-    //     try executeSQL("INSERT INTO test_table (name) VALUES ('test1'), ('test2'), ('test3')")
-    //
-    //     // Verify row count helper works
-    //     let count = try rowCount(in: "test_table")
-    //     XCTAssertEqual(count, 3, "Should have 3 rows")
-    // }
+    func testRowCount() async throws {
+        // Create test table and insert data
+        try executeSQL("CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT)")
+        try executeSQL("INSERT INTO test_table (name) VALUES ('test1')")
+        try executeSQL("INSERT INTO test_table (name) VALUES ('test2')")
+        try executeSQL("INSERT INTO test_table (name) VALUES ('test3')")
+
+        // Verify row count helper works
+        let count = try rowCount(in: "test_table")
+        XCTAssertEqual(count, 3, "Should have 3 rows")
+    }
 
     func testDatabaseIsolation() async throws {
         // Each test should get a fresh database
         // This test verifies no tables exist from previous tests
-        let query = "SELECT COUNT(*) FROM sqlite_master WHERE type='table'"
-        let tableCount = try db.scalar(query) as? Int ?? 0
+        let tableCount = try scalar("SELECT COUNT(*) FROM sqlite_master WHERE type='table'")
 
         // In-memory DB should be empty at start of each test
-        XCTAssertEqual(tableCount, 0, "Fresh test should have no tables")
+        XCTAssertEqual(Int64.fromDatabaseValue(tableCount ?? .null), 0, "Fresh test should have no tables")
     }
 }

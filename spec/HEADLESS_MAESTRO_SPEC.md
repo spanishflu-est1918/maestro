@@ -720,6 +720,25 @@ The Maestro Agent is available via maestro_ask_agent for complex queries.
 
 ---
 
+## Technology Stack
+
+| Technology | Purpose | Why |
+|------------|---------|-----|
+| **Swift Package Manager** | Build system | Native, no external tools |
+| **GRDB.swift** | SQLite toolkit | Built-in migrations, type-safe queries, excellent API |
+| **XCTest** | Testing framework | Native, integration-friendly |
+| **EventKit** | macOS Reminders | System integration |
+| **NSWorkspace** | Focus tracking | macOS window/app events |
+
+**Key Decision: GRDB.swift over SQLite.swift**
+- Built-in migration system (no custom runner needed)
+- Better transaction handling and connection management
+- Type-safe query builder
+- Active development and excellent documentation
+- Simpler API for our integration-first approach
+
+---
+
 ## MVP Scope
 
 Ship this first:
@@ -902,13 +921,14 @@ Respond with actionable insight. Be concise. Reference specific tasks or observa
 
 ### Phase 0: Project Setup
 
-- [ ] Create Swift package
-- [ ] Configure XCTest
+- [x] Create Swift package
+- [x] Configure XCTest
 - [ ] Set up CI (GitHub Actions)
-- [ ] Configure SQLite dependency
-- [ ] Create test database helpers
-- [ ] Create base test case class
-- [ ] Verify tests run on clean checkout
+- [x] Configure GRDB.swift dependency
+- [x] Create test database helpers
+- [x] Create base test case class
+- [x] Create Database manager with GRDB
+- [x] Verify tests run on clean checkout (15/15 tests passing)
 
 ### Phase 1: Core Data Layer (Integration-First)
 

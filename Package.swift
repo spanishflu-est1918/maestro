@@ -13,15 +13,15 @@ let package = Package(
         .library(name: "MaestroCore", targets: ["MaestroCore"])
     ],
     dependencies: [
-        // SQLite wrapper for Swift
-        .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.0"),
+        // GRDB - SQLite toolkit with migrations, type-safe queries
+        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.0.0"),
     ],
     targets: [
         // Core library - database, data models, business logic
         .target(
             name: "MaestroCore",
             dependencies: [
-                .product(name: "SQLite", package: "SQLite.swift")
+                .product(name: "GRDB", package: "GRDB.swift")
             ]
         ),
 
