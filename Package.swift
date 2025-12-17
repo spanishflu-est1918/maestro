@@ -15,6 +15,8 @@ let package = Package(
     dependencies: [
         // GRDB - SQLite toolkit with migrations, type-safe queries
         .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.0.0"),
+        // MCP - Model Context Protocol SDK for AI tool integration
+        .package(url: "https://github.com/modelcontextprotocol/swift-sdk.git", from: "0.10.0"),
     ],
     targets: [
         // Core library - database, data models, business logic
@@ -28,7 +30,10 @@ let package = Package(
         // Executable - daemon, MCP server, menu bar app
         .executableTarget(
             name: "Maestro",
-            dependencies: ["MaestroCore"]
+            dependencies: [
+                "MaestroCore",
+                .product(name: "MCP", package: "swift-sdk")
+            ]
         ),
 
         // Tests
