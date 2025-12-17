@@ -118,6 +118,9 @@ public final class MaestroMCPServer {
                 self.makeGetAgentMetricsTool()
             ])
 
+            // Status tool
+            tools.append(self.makeGetStatusTool())
+
             // Log tool count
             let countMsg = "[\(Date().timeIntervalSince1970)] Returning \(tools.count) tools\n"
             if let data = countMsg.data(using: .utf8),
@@ -202,6 +205,8 @@ public final class MaestroMCPServer {
                 return await self.handleListAgentActivities(params)
             case "maestro_get_agent_metrics":
                 return await self.handleGetAgentMetrics(params)
+            case "maestro_get_status":
+                return await self.handleGetStatus(params)
 
             default:
                 return .init(content: [.text("Unknown tool: \(params.name)")], isError: true)

@@ -709,4 +709,23 @@ extension MaestroMCPServer {
             ])
         )
     }
+
+    // MARK: - Status Tool
+
+    func makeGetStatusTool() -> Tool {
+        Tool(
+            name: "maestro_get_status",
+            description: """
+                Get current status summary for menu bar.
+                Returns: color (clear/attention/input/urgent), badgeCount,
+                and counts for overdue tasks, stale tasks, agents needing input,
+                active agents, and recent Linear activity.
+                """,
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([:]),
+                "additionalProperties": false
+            ])
+        )
+    }
 }
