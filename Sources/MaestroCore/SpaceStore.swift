@@ -209,7 +209,7 @@ public class SpaceStore {
     /// - Parameter id: The space ID
     /// - Throws: Database errors
     public func delete(_ id: UUID) throws {
-        try db.write { db in
+        _ = try db.write { db in
             try Space.deleteOne(db, key: id.uuidString)
         }
     }
@@ -217,7 +217,7 @@ public class SpaceStore {
     /// Delete all spaces (for testing)
     /// - Throws: Database errors
     public func deleteAll() throws {
-        try db.write { db in
+        _ = try db.write { db in
             try Space.deleteAll(db)
         }
     }
