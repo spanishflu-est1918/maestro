@@ -2,10 +2,11 @@ import Foundation
 import GRDB
 
 /// Database connection manager using GRDB
-/// Handles SQLite connection lifecycle, transactions, and error handling
+/// Handles SQLite connection lifecycle, transactions, migrations, and error handling
 public class Database {
     private var dbQueue: DatabaseQueue?
     private let path: String
+    private var migrator = DatabaseMigrator()
 
     public enum DatabaseError: Error, LocalizedError {
         case notConnected
@@ -33,6 +34,7 @@ public class Database {
     /// - Parameter path: Path to SQLite database file (use ":memory:" for in-memory)
     public init(path: String) {
         self.path = path
+        setupMigrations()
     }
 
     /// Initialize with in-memory database
@@ -40,9 +42,27 @@ public class Database {
         self.init(path: ":memory:")
     }
 
+    // MARK: - Migrations
+
+    /// Register all database migrations
+    /// Migrations are applied in order and tracked automatically by GRDB
+    private func setupMigrations() {
+        // v1: Initial schema (will be added in B006)
+        migrator.registerMigration("v1") { db in
+            // This is a placeholder migration for testing
+            // Actual schema will be added in B006 (Core Schema Migration)
+            try db.execute(sql: """
+                CREATE TABLE IF NOT EXISTS _migration_test (
+                    id INTEGER PRIMARY KEY,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+        }
+    }
+
     // MARK: - Connection Management
 
-    /// Open database connection
+    /// Open database connection and run migrations
     /// - Throws: DatabaseError.connectionFailed if connection fails
     public func connect() throws {
         do {
@@ -60,10 +80,17 @@ public class Database {
                 dbQueue = try DatabaseQueue(path: path)
             }
 
+            guard let queue = dbQueue else {
+                throw DatabaseError.connectionFailed("Failed to create database queue")
+            }
+
             // Enable foreign keys
-            try dbQueue?.write { db in
+            try queue.write { db in
                 try db.execute(sql: "PRAGMA foreign_keys = ON")
             }
+
+            // Run migrations
+            try migrator.migrate(queue)
 
             print("✓ Database connected: \(path)")
         } catch {
