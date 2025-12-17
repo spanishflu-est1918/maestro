@@ -52,14 +52,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ReminderSync service with permission handling
 
 - **Linear Integration**
-  - Link tasks to Linear issues
-  - Track issue state synchronization
+  - Full GraphQL API integration with LinearAPIClient
+  - Create Linear issues from Maestro tasks
+  - Bidirectional sync (Maestro ↔ Linear)
+  - Fetch and update Linear issues asynchronously
+  - Status and priority mapping between systems
   - LinearLink model with GRDB persistence
-  - LinearSync service with API key support
-  - Placeholder for full API integration
+  - LinearSync service with async/await API calls
+  - Error handling for API key validation and task linking
 
 #### Testing
-- 126 comprehensive tests (unit, integration, E2E)
+- 143 comprehensive tests (unit, integration, E2E, async)
 - SpaceStore tests (10 tests)
 - TaskStore tests (10 tests)
 - DocumentStore tests (5 tests)
@@ -75,8 +78,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - QuickView tests (3 tests)
 - Viewer window tests (2 tests)
 - ReminderSync tests (4 tests)
-- LinearSync tests (5 tests)
+- LinearSync tests (12 tests - including async API tests)
 - E2E system tests (3 tests)
+- Performance benchmarks (10 tests)
 
 #### CI/CD
 - GitHub Actions workflow for automated testing

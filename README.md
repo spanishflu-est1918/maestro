@@ -162,6 +162,99 @@ Available via any MCP-compatible client:
 - `maestro_get_default_document` - Get space's default document
 - `maestro_set_default_document` - Set space's default document
 
+## Linear Integration
+
+Maestro provides full Linear API integration via GraphQL, allowing bidirectional sync between Maestro tasks and Linear issues.
+
+### Setup
+
+1. Get your Linear API key from [Linear Settings](https://linear.app/settings/api)
+2. Initialize LinearSync with your API key:
+
+```swift
+let linearSync = LinearSync(database: db, apiKey: "lin_api_YOUR_KEY")
+```
+
+### Features
+
+#### Create Linear Issue from Task
+
+Create a new Linear issue from an existing Maestro task:
+
+```swift
+let link = try await linearSync.createLinearIssue(
+    taskId: task.id,
+    teamId: "team-uuid"
+)
+print("Created Linear issue: \(link.linearIssueKey)")
+```
+
+The task's title, description, and priority are automatically mapped to Linear.
+
+#### Link Existing Linear Issue
+
+Link an existing Linear issue to a Maestro task:
+
+```swift
+try linearSync.linkIssue(
+    taskId: task.id,
+    linearIssueId: "issue-uuid",
+    linearIssueKey: "PROJ-123",
+    linearTeamId: "team-uuid",
+    linearState: "In Progress"
+)
+```
+
+#### Sync from Linear
+
+Fetch updates from Linear and update local task states:
+
+```swift
+try await linearSync.sync()
+```
+
+This fetches all assigned Linear issues and updates the state of any linked tasks.
+
+#### Update Linear from Maestro
+
+Push Maestro task changes to Linear:
+
+```swift
+try await linearSync.syncTaskToLinear(taskId: task.id)
+```
+
+Updates the linked Linear issue with the task's current title, description, and priority.
+
+### Status Mapping
+
+| Maestro Status | Linear State |
+|---------------|--------------|
+| inbox         | Backlog      |
+| todo          | Todo         |
+| inProgress    | In Progress  |
+| done          | Done         |
+| archived      | Canceled     |
+
+### Priority Mapping
+
+| Maestro Priority | Linear Priority |
+|-----------------|----------------|
+| urgent          | 1 (Urgent)     |
+| high            | 2 (High)       |
+| medium          | 3 (Medium)     |
+| low             | 4 (Low)        |
+| none            | 0 (No priority)|
+
+### GraphQL API
+
+LinearAPIClient provides direct access to Linear's GraphQL API:
+
+- `fetchMyIssues()` - Get all assigned issues
+- `fetchIssue(id:)` - Get specific issue
+- `createIssue(...)` - Create new issue
+- `updateIssue(...)` - Update existing issue
+- `fetchWorkflowStates(teamId:)` - Get team workflow states
+
 ## Database Schema
 
 ### Spaces Table
@@ -243,10 +336,11 @@ swift test -v
 
 ### Test Coverage
 
-- 126 tests covering all major functionality
+- 143 tests covering all major functionality
 - Unit tests for all stores and models
 - Integration tests for MCP tools
 - End-to-end system tests
+- Async Linear API integration tests
 
 ### Code Quality
 
@@ -261,15 +355,18 @@ swiftlint
 ## Known Issues
 
 1. **EventKit Permissions** - Reminder sync requires explicit user permission on first run
-2. **Linear API** - Full Linear sync is stubbed; API integration pending
-3. **Web Viewer** - Dashboard UI is placeholder; full implementation pending
-4. **Menu Bar Icon** - Currently uses default system icon; custom icon needed
+2. **Linear OAuth** - Currently uses API key authentication; OAuth flow pending
+3. **Linear Webhooks** - Real-time sync via webhooks not yet implemented
+4. **Web Viewer** - Dashboard UI is placeholder; full implementation pending
+5. **Menu Bar Icon** - Currently uses default system icon; custom icon needed
 
 ## Future Roadmap
 
 ### Phase 1: Core Stability (Q1 2025)
 
-- Complete Linear API integration with OAuth flow
+- ✅ Complete Linear API GraphQL integration
+- Add Linear OAuth authentication flow
+- Add Linear webhook support for real-time sync
 - Implement full web dashboard UI
 - Add custom menu bar icon and animations
 - Enhanced logging and error reporting
