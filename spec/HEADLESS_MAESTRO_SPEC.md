@@ -951,30 +951,30 @@ Respond with actionable insight. Be concise. Reference specific tasks or observa
 ### Phase 1: Core Data Layer (Integration-First)
 
 #### Walking Skeleton
-- [ ] Test: Create space → Store → Retrieve flow
-- [ ] Test: SQLite persistence (close DB, reopen, verify)
-- [ ] Test: Migrations from empty DB
-- [ ] Implement: Database manager + migrations
+- [x] Test: Create space → Store → Retrieve flow
+- [x] Test: SQLite persistence (close DB, reopen, verify)
+- [x] Test: Migrations from empty DB
+- [x] Implement: Database manager + migrations
 
 #### Spaces
-- [ ] Test: Space CRUD flow (create → get → update → list → archive → delete)
+- [x] Test: Space CRUD flow (create → get → update → list → archive → delete)
 - [ ] Test: Space validation (missing name, invalid color, etc.)
-- [ ] Test: Space hierarchy (parent/child relationships)
+- [x] Test: Space hierarchy (parent/child relationships)
 - [ ] Test: Space path inference (connect directory → infer space)
-- [ ] Implement: SpaceStore with all operations
+- [x] Implement: SpaceStore with all operations
 
 #### Tasks
-- [ ] Test: Task CRUD flow (create → get → update → complete → archive)
+- [x] Test: Task CRUD flow (create → get → update → complete → archive)
 - [ ] Test: Task validation (missing fields, invalid IDs)
-- [ ] Test: Task status transitions (inbox → todo → inProgress → done)
-- [ ] Test: Task surfacing algorithm (priority/order)
-- [ ] Implement: TaskStore with all operations
+- [x] Test: Task status transitions (inbox → todo → inProgress → done)
+- [x] Test: Task surfacing algorithm (priority/order)
+- [x] Implement: TaskStore with all operations
 
 #### Documents
-- [ ] Test: Document CRUD flow (create → get → update → delete)
-- [ ] Test: Default document creation and protection
-- [ ] Test: Document organization (paths, pinning)
-- [ ] Implement: DocumentStore with all operations
+- [x] Test: Document CRUD flow (create → get → update → delete)
+- [x] Test: Default document creation and protection
+- [x] Test: Document organization (paths, pinning)
+- [x] Implement: DocumentStore with all operations
 
 #### Reminders (EventKit)
 - [ ] Test: EventKit integration flow (connect to Reminders.app)
@@ -1037,13 +1037,13 @@ Respond with actionable insight. Be concise. Reference specific tasks or observa
 
 | Phase | Priority | Tests | Status |
 |-------|----------|-------|--------|
-| 0. Setup | FIRST | 7 tasks | ⬜ Not started |
-| 1. Core Data | FIRST | ~20 integration tests | ⬜ Not started |
+| 0. Setup | FIRST | 7 tasks | ✅ Complete (9 tests) |
+| 1. Core Data | FIRST | ~20 integration tests | 🟡 In progress (65 tests) |
 | 5. MCP Server | SECOND | ~6 contract tests | ⬜ Not started |
 | 8. Daemon | THIRD | ~3 integration tests | ⬜ Not started |
 | 9. Visualization | FOURTH | ~4 UI tests | ⬜ Not started |
 | 10. Linear Integration | FIFTH | ~2 integration tests | ⬜ Not started |
-| **MVP** | **CORE** | **~42 tests** | **⬜ Not started** |
+| **MVP** | **CORE** | **~42 tests** | **🟡 In progress** |
 
 **MVP Scope:** Phases 0, 1, 5, 8, 9, 10 = Headless system with:
 - SQLite storage (Spaces, Tasks, Documents)
