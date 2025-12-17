@@ -12,7 +12,6 @@ extension MaestroMCPServer {
             name: "maestro_list_spaces",
             description: "List all spaces with optional filters",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "includeArchived": .object([
                         "type": "boolean",
@@ -32,7 +31,6 @@ extension MaestroMCPServer {
             name: "maestro_get_space",
             description: "Get a space by ID",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -49,7 +47,6 @@ extension MaestroMCPServer {
             name: "maestro_create_space",
             description: "Create a new space",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "name": .object([
                         "type": "string",
@@ -83,7 +80,6 @@ extension MaestroMCPServer {
             name: "maestro_update_space",
             description: "Update a space",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -113,7 +109,6 @@ extension MaestroMCPServer {
             name: "maestro_archive_space",
             description: "Archive a space",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -130,7 +125,6 @@ extension MaestroMCPServer {
             name: "maestro_delete_space",
             description: "Delete a space permanently",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -149,7 +143,6 @@ extension MaestroMCPServer {
             name: "maestro_list_tasks",
             description: "List tasks with optional filters",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "spaceId": .object([
                         "type": "string",
@@ -174,7 +167,6 @@ extension MaestroMCPServer {
             name: "maestro_get_task",
             description: "Get a task by ID",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -191,7 +183,6 @@ extension MaestroMCPServer {
             name: "maestro_create_task",
             description: "Create a new task",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "spaceId": .object([
                         "type": "string",
@@ -226,7 +217,6 @@ extension MaestroMCPServer {
             name: "maestro_update_task",
             description: "Update a task",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -261,7 +251,6 @@ extension MaestroMCPServer {
             name: "maestro_complete_task",
             description: "Mark a task as complete",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -278,7 +267,6 @@ extension MaestroMCPServer {
             name: "maestro_archive_task",
             description: "Archive a task",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -295,7 +283,6 @@ extension MaestroMCPServer {
             name: "maestro_delete_task",
             description: "Delete a task permanently",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -312,7 +299,6 @@ extension MaestroMCPServer {
             name: "maestro_get_surfaced_tasks",
             description: "Get surfaced tasks using priority algorithm",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "spaceId": .object([
                         "type": "string",
@@ -334,7 +320,6 @@ extension MaestroMCPServer {
             name: "maestro_list_documents",
             description: "List documents with optional filters",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "spaceId": .object([
                         "type": "string",
@@ -354,7 +339,6 @@ extension MaestroMCPServer {
             name: "maestro_get_document",
             description: "Get a document by ID",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -371,7 +355,6 @@ extension MaestroMCPServer {
             name: "maestro_create_document",
             description: "Create a new document",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "spaceId": .object([
                         "type": "string",
@@ -400,7 +383,6 @@ extension MaestroMCPServer {
             name: "maestro_update_document",
             description: "Update a document",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -425,7 +407,6 @@ extension MaestroMCPServer {
             name: "maestro_pin_document",
             description: "Pin a document",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -442,7 +423,6 @@ extension MaestroMCPServer {
             name: "maestro_unpin_document",
             description: "Unpin a document",
             inputSchema: .object([
-                "type": "string",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -459,7 +439,6 @@ extension MaestroMCPServer {
             name: "maestro_delete_document",
             description: "Delete a document permanently",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",
@@ -476,7 +455,6 @@ extension MaestroMCPServer {
             name: "maestro_get_default_document",
             description: "Get the default document for a space",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "spaceId": .object([
                         "type": "string",
@@ -493,7 +471,6 @@ extension MaestroMCPServer {
             name: "maestro_set_default_document",
             description: "Set a document as the default for its space",
             inputSchema: .object([
-                "type": "object",
                 "properties": .object([
                     "id": .object([
                         "type": "string",

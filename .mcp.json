@@ -1,10 +1,10 @@
 {
   "mcpServers": {
     "maestrod": {
-      "type": "stdio",
-      "command": "${PWD}/.build/release/maestrod",
+      "command": "/Users/gorkolas/Documents/www/maestro/.build/release/maestrod",
+      "args": [],
       "env": {
-        "MAESTRO_DB_PATH": "${PWD}/maestro.db"
+        "MAESTRO_DB_PATH": "/Users/gorkolas/Documents/www/maestro/maestro.db"
       }
     }
   }

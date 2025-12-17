@@ -46,6 +46,22 @@ public final class MaestroMCPServer {
 
     private func registerListTools() async {
         await server.withMethodHandler(ListTools.self) { [weak self] _ in
+            // Debug logging
+            let logPath = "/tmp/maestro_mcp.log"
+            let timestamp = Date().timeIntervalSince1970
+            let logMsg = "[\(timestamp)] ListTools handler called, self=\(self != nil ? "valid" : "nil")\n"
+            if let data = logMsg.data(using: .utf8) {
+                if FileManager.default.fileExists(atPath: logPath) {
+                    if let handle = FileHandle(forWritingAtPath: logPath) {
+                        handle.seekToEndOfFile()
+                        handle.write(data)
+                        try? handle.close()
+                    }
+                } else {
+                    try? data.write(to: URL(fileURLWithPath: logPath))
+                }
+            }
+
             guard let self = self else {
                 return .init(tools: [])
             }
@@ -86,6 +102,15 @@ public final class MaestroMCPServer {
                 self.makeGetDefaultDocumentTool(),
                 self.makeSetDefaultDocumentTool()
             ])
+
+            // Log tool count
+            let countMsg = "[\(Date().timeIntervalSince1970)] Returning \(tools.count) tools\n"
+            if let data = countMsg.data(using: .utf8),
+               let handle = FileHandle(forWritingAtPath: logPath) {
+                handle.seekToEndOfFile()
+                handle.write(data)
+                try? handle.close()
+            }
 
             return .init(tools: tools)
         }
