@@ -991,13 +991,13 @@ Respond with actionable insight. Be concise. Reference specific tasks or observa
 
 ### Phase 5: MCP Server
 
-- [ ] Test: MCP server starts and accepts connections
-- [ ] Test: All tools have valid schemas
-- [ ] Test: Spaces CRUD via MCP (list → create → get → update → delete)
-- [ ] Test: Tasks CRUD via MCP (with filtering)
-- [ ] Test: Documents CRUD via MCP
-- [ ] Test: Error handling (missing params, invalid IDs)
-- [ ] Implement: MCPServer with all tools
+- [x] Test: MCP server starts and accepts connections
+- [x] Test: All tools have valid schemas (23 tools defined)
+- [x] Test: Spaces CRUD via MCP (list → create → get → update → delete → archive)
+- [x] Test: Tasks CRUD via MCP (with filtering, surfacing, completion)
+- [x] Test: Documents CRUD via MCP (with pinning, default docs)
+- [x] Test: Error handling (missing params, invalid IDs)
+- [x] Implement: MCPServer with all tools (6 spaces, 8 tasks, 9 documents)
 
 ### Phase 6: Deferred - See "FUTURE QUESTIONS" at end
 
@@ -1038,12 +1038,12 @@ Respond with actionable insight. Be concise. Reference specific tasks or observa
 | Phase | Priority | Tests | Status |
 |-------|----------|-------|--------|
 | 0. Setup | FIRST | 7 tasks | ✅ Complete (9 tests) |
-| 1. Core Data | FIRST | ~20 integration tests | 🟡 In progress (65 tests) |
-| 5. MCP Server | SECOND | ~6 contract tests | ⬜ Not started |
+| 1. Core Data | FIRST | ~20 integration tests | ✅ Complete (65 tests) |
+| 5. MCP Server | SECOND | ~6 contract tests | ✅ Complete (21 tests) |
 | 8. Daemon | THIRD | ~3 integration tests | ⬜ Not started |
 | 9. Visualization | FOURTH | ~4 UI tests | ⬜ Not started |
 | 10. Linear Integration | FIFTH | ~2 integration tests | ⬜ Not started |
-| **MVP** | **CORE** | **~42 tests** | **🟡 In progress** |
+| **MVP** | **CORE** | **~42 tests** | **🟡 In progress (86 tests)** |
 
 **MVP Scope:** Phases 0, 1, 5, 8, 9, 10 = Headless system with:
 - SQLite storage (Spaces, Tasks, Documents)

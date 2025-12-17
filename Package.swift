@@ -40,6 +40,14 @@ let package = Package(
         .testTarget(
             name: "MaestroCoreTests",
             dependencies: ["MaestroCore"]
+        ),
+        .testTarget(
+            name: "MaestroTests",
+            dependencies: [
+                "Maestro",
+                "MaestroCore",
+                .product(name: "MCP", package: "swift-sdk")
+            ]
         )
     ]
 )

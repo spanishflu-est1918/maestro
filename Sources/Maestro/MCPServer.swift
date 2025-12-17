@@ -3,14 +3,14 @@ import MCP
 import MaestroCore
 
 /// Maestro MCP Server
-final class MaestroMCPServer {
+public final class MaestroMCPServer {
     private let server: Server
     let db: Database
     let spaceStore: SpaceStore
     let taskStore: TaskStore
     let documentStore: DocumentStore
 
-    init() throws {
+    public init() throws {
         // Initialize database
         db = Database()
         try db.connect()
@@ -32,7 +32,7 @@ final class MaestroMCPServer {
         )
     }
 
-    func start() async throws {
+    public func start() async throws {
         // Register tool handlers
         await registerListTools()
         await registerSpaceTools()
