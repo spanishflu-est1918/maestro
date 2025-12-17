@@ -160,7 +160,7 @@ final class E2ESystemTests: XCTestCase {
             """)
         }
 
-        XCTAssertEqual(tables.sorted(), ["documents", "linear_sync", "reminder_space_links", "spaces", "tasks"])
+        XCTAssertEqual(tables.sorted(), ["agent_activity", "agent_sessions", "documents", "linear_sync", "reminder_space_links", "spaces", "tasks"])
     }
 
     func testDataPersistenceAcrossConnections() throws {

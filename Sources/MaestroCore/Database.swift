@@ -191,6 +191,67 @@ public class Database {
                 CREATE INDEX idx_linear_sync_linear_issue_id ON linear_sync(linear_issue_id)
             """)
         }
+
+        // v4: Agent monitoring - agent activity and sessions
+        migrator.registerMigration("v4") { db in
+            // Agent sessions table - tracks agent work sessions
+            try db.execute(sql: """
+                CREATE TABLE agent_sessions (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    agent_name TEXT NOT NULL,
+                    started_at TEXT NOT NULL,
+                    ended_at TEXT,
+                    total_activities INTEGER NOT NULL DEFAULT 0,
+                    tasks_created INTEGER NOT NULL DEFAULT 0,
+                    tasks_updated INTEGER NOT NULL DEFAULT 0,
+                    tasks_completed INTEGER NOT NULL DEFAULT 0,
+                    spaces_created INTEGER NOT NULL DEFAULT 0,
+                    documents_created INTEGER NOT NULL DEFAULT 0,
+                    metadata TEXT
+                )
+            """)
+
+            // Agent activity table - detailed activity log
+            try db.execute(sql: """
+                CREATE TABLE agent_activity (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    session_id TEXT NOT NULL,
+                    agent_name TEXT NOT NULL,
+                    activity_type TEXT NOT NULL,
+                    resource_type TEXT NOT NULL,
+                    resource_id TEXT,
+                    description TEXT,
+                    metadata TEXT,
+                    timestamp TEXT NOT NULL,
+                    FOREIGN KEY (session_id) REFERENCES agent_sessions(id) ON DELETE CASCADE
+                )
+            """)
+
+            // Create indexes for efficient queries
+            try db.execute(sql: """
+                CREATE INDEX idx_agent_sessions_agent_name ON agent_sessions(agent_name)
+            """)
+
+            try db.execute(sql: """
+                CREATE INDEX idx_agent_sessions_started_at ON agent_sessions(started_at)
+            """)
+
+            try db.execute(sql: """
+                CREATE INDEX idx_agent_activity_session_id ON agent_activity(session_id)
+            """)
+
+            try db.execute(sql: """
+                CREATE INDEX idx_agent_activity_agent_name ON agent_activity(agent_name)
+            """)
+
+            try db.execute(sql: """
+                CREATE INDEX idx_agent_activity_resource ON agent_activity(resource_type, resource_id)
+            """)
+
+            try db.execute(sql: """
+                CREATE INDEX idx_agent_activity_timestamp ON agent_activity(timestamp)
+            """)
+        }
     }
 
     // MARK: - Connection Management

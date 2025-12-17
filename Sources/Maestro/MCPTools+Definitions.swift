@@ -527,4 +527,186 @@ extension MaestroMCPServer {
             ])
         )
     }
+
+    // MARK: - Agent Monitoring Tools
+
+    func makeStartAgentSessionTool() -> Tool {
+        Tool(
+            name: "maestro_start_agent_session",
+            description: "Start a new agent work session for tracking",
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([
+                    "agentName": .object([
+                        "type": "string",
+                        "description": "Agent name (e.g., 'Claude Code', 'Codex')"
+                    ]),
+                    "metadata": .object([
+                        "type": "object",
+                        "description": "Optional metadata (key-value pairs)",
+                        "additionalProperties": .object(["type": "string"])
+                    ])
+                ]),
+                "required": .array(["agentName"]),
+                "additionalProperties": false
+            ])
+        )
+    }
+
+    func makeEndAgentSessionTool() -> Tool {
+        Tool(
+            name: "maestro_end_agent_session",
+            description: "End an active agent session",
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([
+                    "sessionId": .object([
+                        "type": "string",
+                        "description": "Session ID (UUID)"
+                    ])
+                ]),
+                "required": .array(["sessionId"]),
+                "additionalProperties": false
+            ])
+        )
+    }
+
+    func makeLogAgentActivityTool() -> Tool {
+        Tool(
+            name: "maestro_log_agent_activity",
+            description: "Log an activity performed by an agent",
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([
+                    "sessionId": .object([
+                        "type": "string",
+                        "description": "Session ID (UUID)"
+                    ]),
+                    "agentName": .object([
+                        "type": "string",
+                        "description": "Agent name"
+                    ]),
+                    "activityType": .object([
+                        "type": "string",
+                        "description": "Activity type",
+                        "enum": .array(["created", "updated", "completed", "archived", "deleted", "viewed", "searched", "synced", "other"])
+                    ]),
+                    "resourceType": .object([
+                        "type": "string",
+                        "description": "Resource type",
+                        "enum": .array(["task", "space", "document", "reminder", "linear_issue", "session", "other"])
+                    ]),
+                    "resourceId": .object([
+                        "type": "string",
+                        "description": "Resource ID (UUID, optional)"
+                    ]),
+                    "description": .object([
+                        "type": "string",
+                        "description": "Activity description (optional)"
+                    ])
+                ]),
+                "required": .array(["sessionId", "agentName", "activityType", "resourceType"]),
+                "additionalProperties": false
+            ])
+        )
+    }
+
+    func makeGetAgentSessionTool() -> Tool {
+        Tool(
+            name: "maestro_get_agent_session",
+            description: "Get agent session details",
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([
+                    "sessionId": .object([
+                        "type": "string",
+                        "description": "Session ID (UUID)"
+                    ])
+                ]),
+                "required": .array(["sessionId"]),
+                "additionalProperties": false
+            ])
+        )
+    }
+
+    func makeListAgentSessionsTool() -> Tool {
+        Tool(
+            name: "maestro_list_agent_sessions",
+            description: "List agent sessions with optional filters",
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([
+                    "agentName": .object([
+                        "type": "string",
+                        "description": "Filter by agent name (optional)"
+                    ]),
+                    "limit": .object([
+                        "type": "integer",
+                        "description": "Maximum number of sessions (default: 50)",
+                        "default": 50
+                    ]),
+                    "activeOnly": .object([
+                        "type": "boolean",
+                        "description": "Only return active sessions (default: false)",
+                        "default": false
+                    ])
+                ]),
+                "additionalProperties": false
+            ])
+        )
+    }
+
+    func makeListAgentActivitiesTool() -> Tool {
+        Tool(
+            name: "maestro_list_agent_activities",
+            description: "List agent activities with optional filters",
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([
+                    "sessionId": .object([
+                        "type": "string",
+                        "description": "Filter by session ID (optional)"
+                    ]),
+                    "agentName": .object([
+                        "type": "string",
+                        "description": "Filter by agent name (optional)"
+                    ]),
+                    "activityType": .object([
+                        "type": "string",
+                        "description": "Filter by activity type (optional)",
+                        "enum": .array(["created", "updated", "completed", "archived", "deleted", "viewed", "searched", "synced", "other"])
+                    ]),
+                    "resourceType": .object([
+                        "type": "string",
+                        "description": "Filter by resource type (optional)",
+                        "enum": .array(["task", "space", "document", "reminder", "linear_issue", "session", "other"])
+                    ]),
+                    "limit": .object([
+                        "type": "integer",
+                        "description": "Maximum number of activities (default: 100)",
+                        "default": 100
+                    ])
+                ]),
+                "additionalProperties": false
+            ])
+        )
+    }
+
+    func makeGetAgentMetricsTool() -> Tool {
+        Tool(
+            name: "maestro_get_agent_metrics",
+            description: "Get performance metrics for an agent",
+            inputSchema: .object([
+                "type": "object",
+                "properties": .object([
+                    "agentName": .object([
+                        "type": "string",
+                        "description": "Agent name"
+                    ])
+                ]),
+                "required": .array(["agentName"]),
+                "additionalProperties": false
+            ])
+        )
+    }
 }

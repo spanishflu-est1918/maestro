@@ -47,7 +47,7 @@ final class DaemonTests: XCTestCase {
             """)
         }
         
-        XCTAssertEqual(tables.sorted(), ["documents", "linear_sync", "reminder_space_links", "spaces", "tasks"], "Should have all core tables")
+        XCTAssertEqual(tables.sorted(), ["agent_activity", "agent_sessions", "documents", "linear_sync", "reminder_space_links", "spaces", "tasks"], "Should have all core tables")
         
         db.close()
         

@@ -107,6 +107,17 @@ public final class MaestroMCPServer {
                 self.makeSetDefaultDocumentTool()
             ])
 
+            // Agent monitoring tools
+            tools.append(contentsOf: [
+                self.makeStartAgentSessionTool(),
+                self.makeEndAgentSessionTool(),
+                self.makeLogAgentActivityTool(),
+                self.makeGetAgentSessionTool(),
+                self.makeListAgentSessionsTool(),
+                self.makeListAgentActivitiesTool(),
+                self.makeGetAgentMetricsTool()
+            ])
+
             // Log tool count
             let countMsg = "[\(Date().timeIntervalSince1970)] Returning \(tools.count) tools\n"
             if let data = countMsg.data(using: .utf8),
@@ -175,6 +186,22 @@ public final class MaestroMCPServer {
                 return await self.handleGetDefaultDocument(params)
             case "maestro_set_default_document":
                 return await self.handleSetDefaultDocument(params)
+
+            // Agent monitoring
+            case "maestro_start_agent_session":
+                return await self.handleStartAgentSession(params)
+            case "maestro_end_agent_session":
+                return await self.handleEndAgentSession(params)
+            case "maestro_log_agent_activity":
+                return await self.handleLogAgentActivity(params)
+            case "maestro_get_agent_session":
+                return await self.handleGetAgentSession(params)
+            case "maestro_list_agent_sessions":
+                return await self.handleListAgentSessions(params)
+            case "maestro_list_agent_activities":
+                return await self.handleListAgentActivities(params)
+            case "maestro_get_agent_metrics":
+                return await self.handleGetAgentMetrics(params)
 
             default:
                 return .init(content: [.text("Unknown tool: \(params.name)")], isError: true)

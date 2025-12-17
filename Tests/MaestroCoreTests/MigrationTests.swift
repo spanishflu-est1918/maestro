@@ -103,7 +103,7 @@ final class MigrationTests: XCTestCase {
             """)
         }
 
-        XCTAssertEqual(tables.sorted(), ["documents", "linear_sync", "reminder_space_links", "spaces", "tasks"], "Should have spaces, documents, tasks, reminder_space_links, and linear_sync tables")
+        XCTAssertEqual(tables.sorted(), ["agent_activity", "agent_sessions", "documents", "linear_sync", "reminder_space_links", "spaces", "tasks"], "Should have all core tables including agent monitoring")
 
         db.close()
         try? FileManager.default.removeItem(atPath: dbPath)
