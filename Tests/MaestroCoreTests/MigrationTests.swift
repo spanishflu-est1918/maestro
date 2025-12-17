@@ -124,7 +124,7 @@ final class MigrationTests: XCTestCase {
 
         let columnNames = columns.map { $0["name"] as! String }
         let requiredColumns = [
-            "id", "name", "path", "color", "parent_id", "archived",
+            "id", "name", "path", "color", "parent_id", "tags", "archived",
             "track_focus", "created_at", "last_active_at", "total_focus_time"
         ]
 

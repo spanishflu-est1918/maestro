@@ -299,18 +299,36 @@ Space {
   name: String
   path: String?              // Connected directory
   color: String              // Hex
-  parentId: UUID?            // Fractal nesting
+  parentId: UUID?            // Fractal nesting (unlimited depth)
+  tags: [String]             // Cross-cutting categories ["active", "urgent", "creative"]
   archived: Bool
-  
+
   // Settings
   trackFocus: Bool           // Monitor when active
-  
+
   // Metadata
   createdAt: Date
   lastActiveAt: Date
   totalFocusTime: Int        // Seconds
 }
 ```
+
+**Space Hierarchy Examples:**
+```
+Music (parentId: nil, tags: ["creative", "personal"])
+├─ Band Music (parentId: Music, tags: ["active", "revenue", "collaborative"])
+│  ├─ Marketing (parentId: Band Music, tags: ["active", "urgent"])
+│  ├─ Production (parentId: Band Music, tags: ["creative", "technical"])
+│  └─ Live Shows (parentId: Band Music, tags: ["active", "revenue"])
+└─ Solo Music (parentId: Music, tags: ["creative", "experimental"])
+```
+
+**Design Philosophy:**
+- **parentId**: Structural hierarchy (Music → Band → Marketing)
+- **tags**: Cross-cutting concerns (what's active/urgent across all spaces)
+- **Unlimited depth**: Spaces can nest infinitely
+- **Single parent**: Each space has one parent (tree structure)
+- **Multiple tags**: Spaces can have many tags (flexible grouping)
 
 ### Document
 
