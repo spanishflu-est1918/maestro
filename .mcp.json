@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "maestrod": {
+      "type": "stdio",
+      "command": "${PWD}/.build/release/maestrod",
+      "env": {
+        "MAESTRO_DB_PATH": "${PWD}/maestro.db"
+      }
+    }
+  }
+}

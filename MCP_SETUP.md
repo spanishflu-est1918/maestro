@@ -31,41 +31,27 @@ swift build -c release
 
 ### 2. Configure for Claude Code
 
-The server needs to be registered in Claude Code's MCP server configuration. There are a few ways to do this:
+The server needs to be registered in Claude Code's MCP server configuration.
 
-#### Option A: Project-level MCP Config (Recommended for testing)
+#### Project-level MCP Config (Already Configured!)
 
-Create `.claude/mcp_servers.json` in this project:
+Create `.mcp.json` in this project root:
 
 ```json
 {
   "mcpServers": {
-    "maestro": {
-      "command": "/Users/gorkolas/Documents/www/maestro/.build/release/maestrod",
+    "maestrod": {
+      "type": "stdio",
+      "command": "${PWD}/.build/release/maestrod",
       "env": {
-        "MAESTRO_DB_PATH": "/Users/gorkolas/Documents/www/maestro/maestro.db"
+        "MAESTRO_DB_PATH": "${PWD}/maestro.db"
       }
     }
   }
 }
 ```
 
-#### Option B: Global MCP Config
-
-Add to `~/.config/claude/mcp_servers.json` (create if doesn't exist):
-
-```json
-{
-  "mcpServers": {
-    "maestro": {
-      "command": "/Users/gorkolas/Documents/www/maestro/.build/release/maestrod",
-      "env": {
-        "MAESTRO_DB_PATH": "/Users/gorkolas/.maestro/maestro.db"
-      }
-    }
-  }
-}
-```
+**Note:** This file is already created and configured for this project!
 
 ### 3. Restart Claude Code
 
