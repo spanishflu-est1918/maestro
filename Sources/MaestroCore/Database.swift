@@ -47,15 +47,89 @@ public class Database {
     /// Register all database migrations
     /// Migrations are applied in order and tracked automatically by GRDB
     private func setupMigrations() {
-        // v1: Initial schema (will be added in B006)
+        // v1: Initial schema - spaces, tasks, documents
         migrator.registerMigration("v1") { db in
-            // This is a placeholder migration for testing
-            // Actual schema will be added in B006 (Core Schema Migration)
+            // Spaces table
             try db.execute(sql: """
-                CREATE TABLE IF NOT EXISTS _migration_test (
-                    id INTEGER PRIMARY KEY,
-                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                CREATE TABLE spaces (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    name TEXT NOT NULL,
+                    path TEXT,
+                    color TEXT NOT NULL,
+                    parent_id TEXT,
+                    archived INTEGER NOT NULL DEFAULT 0,
+                    track_focus INTEGER NOT NULL DEFAULT 0,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    last_active_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    total_focus_time INTEGER NOT NULL DEFAULT 0,
+                    FOREIGN KEY (parent_id) REFERENCES spaces(id) ON DELETE CASCADE
                 )
+            """)
+
+            // Create index on path for space inference
+            try db.execute(sql: """
+                CREATE INDEX idx_spaces_path ON spaces(path) WHERE path IS NOT NULL
+            """)
+
+            // Create index on parent_id for hierarchy queries
+            try db.execute(sql: """
+                CREATE INDEX idx_spaces_parent_id ON spaces(parent_id) WHERE parent_id IS NOT NULL
+            """)
+
+            // Documents table
+            try db.execute(sql: """
+                CREATE TABLE documents (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    space_id TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    content TEXT NOT NULL DEFAULT '',
+                    path TEXT NOT NULL DEFAULT '/',
+                    is_default INTEGER NOT NULL DEFAULT 0,
+                    is_pinned INTEGER NOT NULL DEFAULT 0,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (space_id) REFERENCES spaces(id) ON DELETE CASCADE
+                )
+            """)
+
+            // Create index on space_id for document queries
+            try db.execute(sql: """
+                CREATE INDEX idx_documents_space_id ON documents(space_id)
+            """)
+
+            // Tasks table
+            try db.execute(sql: """
+                CREATE TABLE tasks (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    space_id TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    status TEXT NOT NULL DEFAULT 'inbox',
+                    priority TEXT NOT NULL DEFAULT 'none',
+                    position INTEGER NOT NULL DEFAULT 0,
+                    due_date TEXT,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    completed_at TEXT,
+                    FOREIGN KEY (space_id) REFERENCES spaces(id) ON DELETE CASCADE,
+                    CHECK (status IN ('inbox', 'todo', 'inProgress', 'done', 'archived')),
+                    CHECK (priority IN ('none', 'low', 'medium', 'high', 'urgent'))
+                )
+            """)
+
+            // Create index on space_id for task queries
+            try db.execute(sql: """
+                CREATE INDEX idx_tasks_space_id ON tasks(space_id)
+            """)
+
+            // Create index on status for filtering
+            try db.execute(sql: """
+                CREATE INDEX idx_tasks_status ON tasks(status)
+            """)
+
+            // Create composite index for surfacing algorithm (status + priority + position)
+            try db.execute(sql: """
+                CREATE INDEX idx_tasks_surfacing ON tasks(status, priority, position)
             """)
         }
     }
