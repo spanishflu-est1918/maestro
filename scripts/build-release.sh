@@ -105,7 +105,7 @@ echo ""
 echo "✅ Installation complete!"
 echo ""
 echo "Next steps:"
-echo "1. Configure MCP server (see docs/MCP_SETUP.md)"
+echo "1. Configure MCP server (see docs/SETUP.md)"
 echo "2. Start daemon: maestrod"
 echo "3. Launch app: open ~/Applications/maestro-app.app"
 EOF

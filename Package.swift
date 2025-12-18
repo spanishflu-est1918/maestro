@@ -35,6 +35,9 @@ let package = Package(
             name: "MaestroUI",
             dependencies: [
                 "MaestroCore"
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
 

@@ -1,7 +1,7 @@
 # Maestro Implementation Document
 
-**Version:** 0.1.0
-**Date:** 2025-12-17
+**Version:** 0.2.0
+**Date:** 2025-12-18
 **Status:** Production Ready
 **Tests:** 136 passing (100% pass rate)
 
@@ -620,73 +620,117 @@ server.addTool(
 
 **AppDelegate (MaestroUI/AppDelegate.swift):**
 - NSApplicationDelegate lifecycle
-- Status bar item creation
+- Status bar item creation with dynamic icon/color
+- MenuBarStateCalculator integration
 - Database connection
 - Window management
+- First-run setup wizard
+- 30-second auto-refresh timer
+
+**Key Features:**
+- Dynamic menu bar icon changes based on state (SF Symbols)
+- Color-coded status: green (clear), yellow (attention), orange (input), red (urgent)
+- Badge count for overdue tasks + agents waiting
+- Custom icon loading with template rendering
 
 **Components:**
 
 #### 1. QuickView Panel (MaestroUI/QuickViewPanel.swift)
 
-**Purpose:** Dropdown panel from menu bar showing overview
+**Purpose:** Minimal dropdown panel from menu bar showing overview
+
+**Design Philosophy:** Clean, native macOS design with:
+- Simple status indicator with colored dot
+- Bullet lists for contexts and tasks
+- Native macOS rounded button
+- No glassmorphic effects or glows
+- Standard NSColor.controlBackgroundColor background
 
 **Features:**
-- Recent spaces (top 5)
-- Due tasks
-- "Open Viewer" button
+- Status indicator with color-coded dot (8px)
+- List of contexts (spaces) - up to 5
+- List of active tasks - up to 5
+- "Open Maestro" button (native NSButton with .rounded style)
 
 **Layout:**
 ```
 ┌─────────────────────────┐
-│ Maestro                 │
-├─────────────────────────┤
-│ Recent Spaces:          │
-│  • Project A            │
-│  • Project B            │
+│ ● All Clear             │
+│ 0 items need attention  │
 │                         │
-│ Due Tasks:              │
-│  • Task 1 (urgent)      │
-│  • Task 2 (high)        │
+│ Contexts                │
+│ • Project A             │
+│ • Project B             │
 │                         │
-│ [Open Viewer]           │
+│ Tasks                   │
+│ • Task 1                │
+│ • Task 2                │
+│                         │
+│ [Open Maestro]          │
 └─────────────────────────┘
 ```
 
+**Implementation Details:**
+- Uses NSStackView for layout
+- NSScrollView for scrollable content
+- Simple bullet points (no fancy buttons)
+- Minimal 16px padding
+- Clean typography (system fonts at 11-13pt)
+
 #### 2. Viewer Window (MaestroUI/ViewerWindow.swift)
 
-**Purpose:** Full web-based dashboard (WKWebView)
+**Purpose:** Full native data visualization dashboard
+
+**Design Philosophy:** Minimal, clean macOS native interface
 
 **Features:**
-- Native window wrapper
+- Native NSViewController (not WKWebView)
+- Scrollable data visualization
 - Window position persistence via frameDescriptor
-- Resizable and closable
-- Future: Full React dashboard
+- Resizable and closable (900x700 default)
+
+**Sections:**
+1. **Header** - "Maestro" title (32pt bold)
+2. **Overview Cards** - Metric cards showing:
+   - Current status (Clear/Attention/Input/Urgent) with color
+   - Overdue task count (if any)
+   - Stale task count (if any)
+   - Active agent count (if any)
+3. **Contexts Section** - All spaces with task counts
+4. **Recent Tasks** - Up to 15 active tasks with priority dots
 
 **Implementation:**
 ```swift
 public class ViewerWindow: NSWindowController {
-    private let webView: WKWebView
-    private static let windowFrameKey = "MaestroViewerWindowFrame"
+    private let db: Database
 
     public init() {
-        let config = WKWebViewConfiguration()
-        webView = WKWebView(frame: .zero, configuration: config)
+        let dbPath = ("~/Library/Application Support/Maestro/maestro.db" as NSString)
+            .expandingTildeInPath
+        self.db = Database(path: dbPath)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1200, height: 800),
+            contentRect: NSRect(x: 0, y: 0, width: 900, height: 700),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
 
-        // Restore saved frame
-        if let frameString = UserDefaults.standard.string(forKey: Self.windowFrameKey) {
-            window.setFrame(from: frameString)
-        }
-
-        window.contentView = webView
         super.init(window: window)
     }
+
+    public func loadViewer() {
+        try db.connect()
+        let viewController = ViewerViewController(database: db)
+        window?.contentViewController = viewController
+    }
+}
+
+class ViewerViewController: NSViewController {
+    // Native data visualization using NSStackView
+    // Metric cards: 100px height, rounded corners (8px)
+    // Task list with priority dots (6px)
+    // Clean typography and spacing
 }
 ```
 
@@ -715,6 +759,181 @@ public class ViewerWindow: NSWindowController {
 │            [Cancel] [Save]      │
 └─────────────────────────────────┘
 ```
+
+### Menu Bar Intelligence
+
+#### MenuBarStateCalculator (MaestroCore/MenuBarStateCalculator.swift)
+
+**Purpose:** Intelligent menu bar state calculation for real-time work status
+
+**Algorithm:** Priority-based surfacing that determines:
+1. **Menu bar color** (clear → attention → input → urgent)
+2. **Badge count** (overdue tasks + agents waiting for input)
+3. **Summary metrics** (overdue, stale, active agents, Linear activity)
+
+**State Priority:**
+```swift
+public enum MenuBarColor: String, Codable {
+    case clear      // Nothing actionable
+    case attention  // Stale tasks (3+ days inactive)
+    case input      // Agent needs input
+    case urgent     // Overdue tasks
+}
+
+// Priority: urgent > input > attention > clear
+```
+
+**Calculation Logic:**
+```swift
+public struct MenuBarState: Codable {
+    public let color: MenuBarColor
+    public let badgeCount: Int
+    public let summary: StateSummary
+}
+
+public func calculate() throws -> MenuBarState {
+    let taskStore = TaskStore(database: database)
+    let agentStore = AgentSessionStore(database: database)
+
+    // Get counts
+    let overdueTasks = try taskStore.getOverdue()
+    let staleTasks = try taskStore.getStale(dayThreshold: 3)
+    let agentsNeedingInput = try agentStore.getSessionsNeedingInput()
+    let activeAgents = try agentStore.getActiveSessions()
+
+    // Determine color (highest priority wins)
+    let color: MenuBarColor
+    if !overdueTasks.isEmpty {
+        color = .urgent       // Red
+    } else if !agentsNeedingInput.isEmpty {
+        color = .input        // Orange
+    } else if !staleTasks.isEmpty {
+        color = .attention    // Yellow
+    } else {
+        color = .clear        // Green
+    }
+
+    // Badge count = overdue + agents waiting
+    let badgeCount = overdueTasks.count + agentsNeedingInput.count
+
+    return MenuBarState(color: color, badgeCount: badgeCount, ...)
+}
+```
+
+**Performance:**
+- Calculation time: ~0.16ms average
+- Runs every 30 seconds automatically
+- No UI blocking (calculated off main thread)
+- Uses indexed queries for O(log n) performance
+
+**Integration:**
+- Called by AppDelegate timer every 30 seconds
+- Updates menu bar icon color dynamically
+- Sets badge count on status item
+- Used by both QuickViewPanel and ViewerWindow
+
+### Agent Monitoring System
+
+**Purpose:** Track AI agent activity (Claude Code, Codex) for workflow insights
+
+**Components:**
+1. **AgentSession** - Active work sessions
+2. **AgentActivity** - Individual tool calls/actions
+3. **AgentSessionStore** - CRUD operations
+4. **Metrics calculation** - Performance insights
+
+**Database Schema (Migration v4):**
+
+```sql
+-- Agent Sessions table
+CREATE TABLE agent_sessions (
+    id TEXT PRIMARY KEY NOT NULL,
+    agent_name TEXT NOT NULL,           -- "Claude Code", "Codex"
+    started_at TEXT NOT NULL,
+    ended_at TEXT,
+    metadata TEXT NOT NULL DEFAULT '{}', -- JSON: repo, branch, etc.
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Agent Activities table
+CREATE TABLE agent_activities (
+    id TEXT PRIMARY KEY NOT NULL,
+    session_id TEXT NOT NULL,
+    agent_name TEXT NOT NULL,
+    activity_type TEXT NOT NULL,        -- created, updated, viewed, etc.
+    resource_type TEXT NOT NULL,        -- task, space, document, etc.
+    resource_id TEXT,                    -- UUID of affected resource
+    description TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES agent_sessions(id) ON DELETE CASCADE
+);
+
+-- Indexes for performance
+CREATE INDEX idx_agent_sessions_agent_name ON agent_sessions(agent_name);
+CREATE INDEX idx_agent_sessions_started_at ON agent_sessions(started_at);
+CREATE INDEX idx_agent_activities_session_id ON agent_activities(session_id);
+CREATE INDEX idx_agent_activities_resource ON agent_activities(resource_type, resource_id);
+```
+
+**Key Features:**
+
+**Session Management:**
+```swift
+// Start new session
+func startSession(agentName: String, metadata: [String: String]) throws -> AgentSession
+
+// End session
+func endSession(_ sessionId: UUID) throws
+
+// Get active sessions (for menu bar)
+func getActiveSessions() throws -> [AgentSession]
+
+// Get sessions needing input (for menu bar state)
+func getSessionsNeedingInput() throws -> [AgentSession]
+```
+
+**Activity Logging:**
+```swift
+public enum ActivityType: String, Codable {
+    case created, updated, completed, archived, deleted
+    case viewed, searched, synced, other
+}
+
+public enum ResourceType: String, Codable {
+    case task, space, document, reminder
+    case linearIssue, session, other
+}
+
+// Log activity
+func logActivity(
+    sessionId: UUID,
+    activityType: ActivityType,
+    resourceType: ResourceType,
+    resourceId: UUID?,
+    description: String?
+) throws
+```
+
+**Metrics:**
+```swift
+public struct AgentMetrics: Codable {
+    public let totalSessions: Int
+    public let activeSessions: Int
+    public let averageSessionDuration: TimeInterval
+    public let totalActivities: Int
+    public let activityBreakdown: [ActivityType: Int]
+    public let errorRate: Double
+}
+
+// Calculate metrics
+func getMetrics(forAgent agentName: String) throws -> AgentMetrics
+```
+
+**Menu Bar Integration:**
+- Active agent count shown in Overview cards
+- "Agent needs input" triggers orange menu bar state
+- Session duration tracked automatically
+- Used for Linear activity metrics (completions in last 24h)
 
 ---
 

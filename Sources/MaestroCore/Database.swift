@@ -33,7 +33,8 @@ public class Database {
     /// Initialize database with file path
     /// - Parameter path: Path to SQLite database file (use ":memory:" for in-memory)
     public init(path: String) {
-        self.path = path
+        // Expand tilde in path
+        self.path = path == ":memory:" ? path : (path as NSString).expandingTildeInPath
         setupMigrations()
     }
 

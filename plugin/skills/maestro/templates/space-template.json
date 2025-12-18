@@ -1,0 +1,182 @@
+{
+  "project": {
+    "name": "Project Name",
+    "color": "#3B82F6",
+    "tags": ["project", "active"],
+    "description": "Template for project spaces",
+    "children": [
+      {
+        "name": "Planning",
+        "color": "#EAB308",
+        "tags": ["planning"],
+        "description": "Specs, designs, and planning documents"
+      },
+      {
+        "name": "Development",
+        "color": "#22C55E",
+        "tags": ["development", "active"],
+        "description": "Implementation tasks"
+      },
+      {
+        "name": "Testing",
+        "color": "#F97316",
+        "tags": ["testing"],
+        "description": "QA and test tasks"
+      },
+      {
+        "name": "Documentation",
+        "color": "#8B5CF6",
+        "tags": ["documentation"],
+        "description": "Documentation tasks"
+      }
+    ]
+  },
+  "team": {
+    "name": "Team Name",
+    "color": "#EF4444",
+    "tags": ["team"],
+    "description": "Template for team spaces",
+    "children": [
+      {
+        "name": "Team Projects",
+        "color": "#3B82F6",
+        "tags": ["projects"],
+        "description": "Team-level projects"
+      },
+      {
+        "name": "Operations",
+        "color": "#F97316",
+        "tags": ["ops"],
+        "description": "Ongoing operational work"
+      },
+      {
+        "name": "Individual Work",
+        "color": "#8B5CF6",
+        "tags": ["personal"],
+        "description": "Personal tasks for team members"
+      }
+    ]
+  },
+  "sprint": {
+    "name": "Sprint NN - Date Range",
+    "color": "#22C55E",
+    "tags": ["sprint", "active"],
+    "description": "Template for sprint spaces",
+    "children": [
+      {
+        "name": "Sprint Planning",
+        "color": "#EAB308",
+        "tags": ["planning"],
+        "description": "Sprint planning and goals"
+      },
+      {
+        "name": "In Progress",
+        "color": "#3B82F6",
+        "tags": ["active"],
+        "description": "Active sprint work"
+      },
+      {
+        "name": "Review",
+        "color": "#F97316",
+        "tags": ["review"],
+        "description": "Completed work pending review"
+      },
+      {
+        "name": "Retrospective",
+        "color": "#8B5CF6",
+        "tags": ["retro"],
+        "description": "Sprint retrospective items"
+      }
+    ]
+  },
+  "client": {
+    "name": "Client Name",
+    "color": "#06B6D4",
+    "tags": ["client"],
+    "description": "Template for client spaces",
+    "children": [
+      {
+        "name": "Active Projects",
+        "color": "#22C55E",
+        "tags": ["active"],
+        "description": "Current client projects"
+      },
+      {
+        "name": "Support",
+        "color": "#EF4444",
+        "tags": ["support"],
+        "description": "Support tickets and issues"
+      },
+      {
+        "name": "Meeting Notes",
+        "color": "#8B5CF6",
+        "tags": ["meetings"],
+        "description": "Client meeting notes and action items"
+      }
+    ]
+  },
+  "personal": {
+    "name": "Personal Work",
+    "color": "#8B5CF6",
+    "tags": ["personal"],
+    "description": "Template for personal work organization",
+    "children": [
+      {
+        "name": "Inbox",
+        "color": "#6B7280",
+        "tags": ["inbox"],
+        "description": "Quick capture, needs triage"
+      },
+      {
+        "name": "This Week",
+        "color": "#EF4444",
+        "tags": ["active"],
+        "description": "Current week priorities"
+      },
+      {
+        "name": "This Month",
+        "color": "#F97316",
+        "tags": ["active"],
+        "description": "Current month goals"
+      },
+      {
+        "name": "Someday",
+        "color": "#3B82F6",
+        "tags": ["backlog"],
+        "description": "Future ideas and projects"
+      }
+    ]
+  },
+  "research": {
+    "name": "R&D / Research",
+    "color": "#8B5CF6",
+    "tags": ["research"],
+    "description": "Template for research and development",
+    "children": [
+      {
+        "name": "Experiments",
+        "color": "#F97316",
+        "tags": ["experiments"],
+        "description": "Active experiments and POCs"
+      },
+      {
+        "name": "Prototypes",
+        "color": "#3B82F6",
+        "tags": ["prototypes"],
+        "description": "Prototype implementations"
+      },
+      {
+        "name": "Learning",
+        "color": "#22C55E",
+        "tags": ["learning"],
+        "description": "Tutorials and educational content"
+      },
+      {
+        "name": "Archive",
+        "color": "#6B7280",
+        "tags": ["archive"],
+        "description": "Completed experiments and findings"
+      }
+    ]
+  }
+}

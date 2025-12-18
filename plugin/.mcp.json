@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "maestro": {
+      "command": "/Applications/Maestro.app/Contents/MacOS/Maestro",
+      "args": ["--mcp"],
+      "env": {}
+    }
+  }
+}

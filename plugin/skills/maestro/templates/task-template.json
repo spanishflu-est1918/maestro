@@ -1,0 +1,44 @@
+{
+  "feature": {
+    "title": "[FEATURE] User-facing description",
+    "description": "**User Story:**\nAs a [user type], I want [goal] so that [benefit]\n\n**Requirements:**\n- Must have: Core functionality\n- Should have: Important additions\n- Could have: Nice-to-have enhancements\n\n**Acceptance Criteria:**\n- [ ] Criterion 1\n- [ ] Criterion 2\n- [ ] Criterion 3\n\n**Technical Approach:**\nTBD\n\n**Testing Plan:**\nTBD\n\n**Linear Issue:** [Link if applicable]",
+    "status": "inbox",
+    "priority": "medium"
+  },
+  "bug": {
+    "title": "[BUG] Brief description of issue",
+    "description": "**Reproduction Steps:**\n1. Go to page X\n2. Click button Y\n3. Observe error Z\n\n**Expected Behavior:**\nShould do A\n\n**Actual Behavior:**\nDoes B instead\n\n**Environment:**\n- Browser: Chrome 120\n- OS: macOS 14\n- Version: 1.2.3\n\n**Error Details:**\n```\n[Paste error message/stack trace]\n```\n\n**Fix Plan:**\nTBD after investigation\n\n**Linear Issue:** [Link if applicable]",
+    "status": "todo",
+    "priority": "high"
+  },
+  "refactor": {
+    "title": "[REFACTOR] Component/module to improve",
+    "description": "**Current Problems:**\n- Hard to test\n- Tight coupling\n- Performance issues\n- Code duplication\n\n**Goals:**\n- Extract interfaces\n- Add unit tests\n- Improve performance by X%\n- Reduce duplication\n\n**Approach:**\n1. Add tests for current behavior\n2. Extract X\n3. Refactor Y\n4. Verify tests still pass\n\n**Success Metrics:**\n- Test coverage >80%\n- Load time <100ms\n- Code complexity <10\n\n**Risk Assessment:**\n- Low/Medium/High risk\n- Mitigation strategy",
+    "status": "todo",
+    "priority": "low"
+  },
+  "research": {
+    "title": "[RESEARCH] Topic to investigate",
+    "description": "**Question:**\nWhat problem are we trying to solve?\n\n**Goals:**\n- Find solutions for X\n- Evaluate options A vs B vs C\n- Recommend approach\n\n**Research Areas:**\n- [ ] Existing solutions\n- [ ] Performance benchmarks\n- [ ] Cost analysis\n- [ ] Integration effort\n\n**Deliverable:**\nDocument with findings and recommendation\n\n**Time Box:**\n4 hours maximum\n\n**Success Criteria:**\nClear recommendation with trade-offs documented",
+    "status": "todo",
+    "priority": "medium"
+  },
+  "spike": {
+    "title": "[SPIKE] Technical investigation",
+    "description": "**Problem:**\nWhat are we trying to learn?\n\n**Questions:**\n- Question 1?\n- Question 2?\n- Question 3?\n\n**Approach:**\n1. Build small prototype\n2. Test key assumptions\n3. Document findings\n\n**Time Box:**\n2 days maximum\n\n**Success Criteria:**\nEnough information to make informed decision\n\n**Follow-up:**\nCreate feature task based on findings",
+    "status": "todo",
+    "priority": "medium"
+  },
+  "documentation": {
+    "title": "[DOCS] Documentation to create/update",
+    "description": "**What to Document:**\nFeature/API/process to document\n\n**Audience:**\nDevelopers/Users/Team\n\n**Sections Needed:**\n- Overview\n- Getting started\n- API reference\n- Examples\n- Troubleshooting\n\n**Success Criteria:**\n- User can complete task without help\n- All edge cases covered\n- Examples tested and working",
+    "status": "todo",
+    "priority": "low"
+  },
+  "deployment": {
+    "title": "[DEPLOY] Deployment task",
+    "description": "**What to Deploy:**\nFeature/fix to deploy\n\n**Environment:**\nStaging/Production\n\n**Pre-deployment Checklist:**\n- [ ] Tests passing\n- [ ] Code reviewed\n- [ ] Database migrations ready\n- [ ] Rollback plan documented\n- [ ] Monitoring configured\n\n**Deployment Steps:**\n1. Step 1\n2. Step 2\n3. Step 3\n\n**Post-deployment Verification:**\n- [ ] Smoke tests\n- [ ] Monitoring checks\n- [ ] User acceptance\n\n**Rollback Plan:**\nHow to rollback if issues occur",
+    "status": "todo",
+    "priority": "high"
+  }
+}

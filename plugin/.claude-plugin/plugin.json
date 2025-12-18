@@ -1,0 +1,25 @@
+{
+  "name": "maestro",
+  "version": "1.0.0",
+  "description": "Intelligent task and project management with Linear integration, agent monitoring, and menu bar intelligence",
+  "author": {
+    "name": "SPANISH FLU",
+    "email": "mrflu1918@proton.me",
+    "url": "https://github.com/spanishflu-est1918"
+  },
+  "homepage": "https://github.com/spanishflu-est1918/maestro",
+  "repository": "https://github.com/spanishflu-est1918/maestro",
+  "license": "MIT",
+  "keywords": [
+    "task-management",
+    "project-management",
+    "linear",
+    "agent-monitoring",
+    "productivity",
+    "macos",
+    "mcp"
+  ],
+  "mcpServers": "./.mcp.json",
+  "skills": ["./skills/"],
+  "commands": ["./commands/"]
+}

@@ -1,17 +1,114 @@
 # Maestro
 
-A native macOS task management system with MCP server integration, Linear sync, and EventKit reminders linking.
+Intelligent task and project management for macOS with Claude Code integration.
+
+**⚡ Zero-Configuration Setup** - First-run wizard automatically configures everything in 30 seconds.
 
 ## Features
 
-- **Native macOS Menu Bar App** - Quick access to spaces, tasks, and documents
-- **MCP Server Integration** - Control Maestro via Anthropic's Model Context Protocol with 30 tools
-- **Agent Monitoring** - Track AI agent (Claude Code, Codex) activity and performance metrics
-- **Linear Sync** - Link Maestro tasks with Linear issues via GraphQL API
-- **EventKit Integration** - Sync with Reminders.app
-- **Space-Based Organization** - Organize tasks and documents into spaces with filesystem paths
-- **Task Surfacing Algorithm** - Intelligent task prioritization based on status and priority
-- **Native Web Viewer** - WKWebView-based dashboard for task management
+### 🎯 Smart Task Management
+- **Intelligent Surfacing** - AI-powered task prioritization (overdue → due soon → high priority)
+- **Status Workflow** - inbox → todo → inProgress → done
+- **Priority Levels** - urgent, high, medium, low, none
+- **Due Date Tracking** - Automatic overdue detection and alerts
+
+### 📁 Space Organization
+- **Hierarchical Spaces** - Organize work with parent/child relationships
+- **Color Coding** - Visual organization with customizable colors (#hex)
+- **Tag System** - Flexible categorization and filtering
+- **Templates** - Pre-built structures for projects, teams, sprints
+
+### 📊 Menu Bar Intelligence
+- **Color States**:
+  - 🟢 Green (clear): Nothing actionable
+  - 🟡 Yellow (attention): Stale tasks (3+ days inactive)
+  - 🟠 Orange (input): Agent needs your input
+  - 🔴 Red (urgent): Overdue tasks exist
+- **Badge Counter** - Shows overdue tasks + agents waiting
+- **Auto-refresh** - Updates every 30 seconds
+- **Performance** - ~0.16ms per calculation
+
+### 🤖 Agent Monitoring
+- **Session Tracking** - Track Claude Code and Codex activity
+- **Activity Logging** - Record tool calls, user messages, errors
+- **Metrics Dashboard** - Sessions, durations, tool usage, error rates
+- **Performance Insights** - Optimize agent workflows
+
+### 🔗 Linear Integration
+- **Bidirectional Linking** - Connect Maestro tasks ↔ Linear issues
+- **Status Sync** - Keep both systems in sync
+- **Team Visibility** - Linear for stakeholders, Maestro for execution
+- **Activity Tracking** - Monitor Linear completion metrics (last 24h)
+
+### 📄 Document Management
+- **Markdown Support** - Rich text documentation
+- **Hierarchical Paths** - Folder-like organization (/specs/, /notes/)
+- **Pinned Documents** - Quick access to frequently used docs
+- **Default Documents** - Per-space landing pages
+
+### 🧠 Maestro Skill (Workflow Guidance)
+- **Task Management Patterns** - Capture → Plan → Execute → Complete
+- **Space Organization** - Best practices for hierarchies
+- **Linear Integration** - Bidirectional sync workflows
+- **Agent Monitoring** - Session management strategies
+- **Templates** - 7 task types, 6 space patterns
+
+## Installation
+
+### Quick Install (macOS 13.0+)
+
+**1. Download & Install**
+```bash
+# Download latest release
+curl -L https://github.com/spanishflu-est1918/maestro/releases/latest/download/Maestro.zip -o Maestro.zip
+
+# Unzip
+unzip Maestro.zip
+
+# Move to Applications
+mv Maestro.app /Applications/
+
+# Launch (right-click → Open for unsigned apps)
+open /Applications/Maestro.app
+```
+
+**2. First Launch - Automatic Setup**
+
+When you first launch Maestro, you'll see:
+
+```
+┌─────────────────────────────────────┐
+│   Welcome to Maestro!               │
+│                                     │
+│   Setup will:                       │
+│   • Configure Claude Code (MCP)     │
+│   • Install Maestro Skill           │
+│   • Set up menu bar                 │
+│                                     │
+│   Takes ~30 seconds.                │
+│                                     │
+│        [Continue]  [Skip]           │
+└─────────────────────────────────────┘
+```
+
+Click **Continue** and Maestro automatically:
+- ✅ Adds Maestro MCP server to `~/.mcp.json`
+- ✅ Installs Maestro Skill to `~/.claude/skills/maestro/`
+- ✅ Creates database at `~/Library/Application Support/Maestro/`
+- ✅ Starts menu bar monitoring
+
+**3. Restart Claude Code**
+
+After setup completes, restart Claude Code to load the Maestro tools.
+
+**4. Verify**
+
+Look for:
+- Maestro icon in menu bar (green checklist)
+- In Claude Code, ask: "How do I use Maestro?"
+- Claude should provide detailed guidance from the Maestro Skill
+
+**That's it!** No manual configuration needed.
 
 ## Architecture
 
