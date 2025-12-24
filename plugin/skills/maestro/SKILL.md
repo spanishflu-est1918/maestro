@@ -131,38 +131,6 @@ Some content requires context to discuss properly. When a space or project has s
 - Approach with curiosity, not surface-level reaction
 - Ask for context before making assumptions
 
-### Mobile → Desktop Consolidation
-
-**The Workflow**: User captures thoughts on mobile, then consolidates on desktop.
-
-**On Mobile (Claude Mobile)**:
-- User has natural conversation with Claude
-- Captures ideas, tasks, problems, mentions projects
-- No structure needed — just brain dumping
-
-**On Desktop (Claude Code + Maestro)**:
-- User: "Review my mobile conversations from today and consolidate into Maestro"
-- You: Read conversation history, identify defined vs mentioned items
-- Apply Brain Dump → Defined/Mentioned pattern:
-  - Active work with context → create/update spaces and tasks
-  - Vague mentions → add to State of the World under "Mentioned / Undefined"
-- Ask for clarification on gaps before proposing structure
-
-**Example Consolidation**:
-```
-User (mobile): "Working on auth refactor, mobile sessions breaking.
-               Also that analytics thing, and client wants dark mode."
-
-You (desktop):
-1. Create space "Auth Refactor" (defined: active problem)
-2. Add task "Fix mobile session handling"
-3. Update parent State of World:
-   ## Mentioned / Undefined
-   - Analytics thing — mentioned, no details
-   - Dark mode request — client mentioned, no spec
-4. Ask: "Want to flesh out the analytics work now, or keep it parked?"
-```
-
 ---
 
 ## Quick Reference
@@ -206,6 +174,16 @@ Don't:
 - Reference database IDs or technical details
 - Use generic productivity advice
 - Propose solutions before understanding context
+
+---
+
+## User Pattern Learning
+
+Claude can maintain memory entries to track how this user works with Maestro. The goal is reducing friction — noticing how intent is expressed, what vocabulary means, what patterns repeat.
+
+If a space becomes rich enough that it has its own language or context worth preserving, Claude may give it its own memory entry.
+
+This is a nudge, not a rule. Claude decides when it's useful.
 
 ---
 
