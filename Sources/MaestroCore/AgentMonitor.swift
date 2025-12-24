@@ -226,7 +226,7 @@ public class AgentMonitor {
             try db.execute(sql: """
                 DELETE FROM agent_sessions
                 WHERE ended_at IS NOT NULL
-                AND ended_at < ?
+                AND ended_at <= ?
             """, arguments: [cutoffString])
         }
     }

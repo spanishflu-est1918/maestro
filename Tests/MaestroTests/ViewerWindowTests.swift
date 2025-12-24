@@ -50,10 +50,10 @@ final class ViewerWindowTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "MaestroViewerWindowFrame")
     }
 
-    func testLoadHTML() throws {
+    func testLoadViewer() throws {
         let viewer = ViewerWindow()
 
-        // Verify we can load HTML string
-        XCTAssertNoThrow(viewer.loadHTML("<html><body>Test</body></html>"))
+        // Verify we can load the viewer
+        XCTAssertNoThrow(viewer.loadViewer())
     }
 }
