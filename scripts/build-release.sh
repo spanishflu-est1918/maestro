@@ -125,17 +125,15 @@ mkdir -p ~/Library/Application\ Support/Maestro
 echo ""
 echo "✅ Installation complete!"
 
-# Restart daemon if it was running
+# Note about daemon
 if [ "$DAEMON_WAS_RUNNING" = true ]; then
     echo ""
-    echo "🔄 Restarting daemon..."
-    nohup /usr/local/bin/maestrod > /dev/null 2>&1 &
-    echo "   Daemon restarted with new version"
+    echo "ℹ️  Daemon was stopped. It will restart automatically when Claude Code needs it."
 fi
 
 # Show version
 echo ""
-/usr/local/bin/maestrod --version 2>/dev/null || true
+echo "Installed: $(/usr/local/bin/maestrod --version 2>/dev/null || echo 'maestrod')"
 EOF
 
 chmod +x "${DIST_DIR}/install.sh"
