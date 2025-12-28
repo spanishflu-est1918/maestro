@@ -125,10 +125,6 @@ mkdir -p ~/Library/Application\ Support/Maestro
 echo ""
 echo "✅ Installation complete!"
 
-# Show version
-echo ""
-echo "Installed: $(/usr/local/bin/maestrod --version 2>/dev/null || echo 'maestrod')"
-
 # Restart daemon if it was running (fully detached)
 if [ "$DAEMON_WAS_RUNNING" = true ]; then
     echo ""
@@ -143,9 +139,9 @@ if [ "$DAEMON_WAS_RUNNING" = true ]; then
 fi
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Done! You can close this terminal."
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ Done! You can close this terminal."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 EOF
 
 chmod +x "${DIST_DIR}/install.sh"
