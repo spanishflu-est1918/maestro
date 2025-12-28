@@ -1,7 +1,0 @@
-{
-  "logLevel": "info",
-  "logPath": "~/.maestro/logs/maestrod.log",
-  "logRotationSizeMB": 10,
-  "databasePath": "~/Library/Application Support/Maestro/maestro.db",
-  "refreshInterval": 300
-}

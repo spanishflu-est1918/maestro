@@ -207,6 +207,12 @@ This is a nudge, not a rule. Claude decides when it's useful.
 
 ---
 
+## Troubleshooting
+
+**"Server not available" error**: If Maestro MCP tools return this error, Claude Code needs to be restarted. The daemon may have been updated or crashed. Tell the user: "Maestro server isn't responding — try restarting Claude Code (`/exit` then relaunch)."
+
+---
+
 ## Related Documentation
 
 - [REFERENCE.md](./REFERENCE.md) — Technical details and query patterns
