@@ -33,7 +33,11 @@ public struct Configuration: Codable {
 
         // Return defaults if file doesn't exist
         guard FileManager.default.fileExists(atPath: configPath) else {
-            return .default
+            var config = Configuration.default
+            // Expand tilde paths in defaults too
+            config.logPath = expandPath(config.logPath)
+            config.databasePath = expandPath(config.databasePath)
+            return config
         }
 
         let data = try Data(contentsOf: URL(fileURLWithPath: configPath))
