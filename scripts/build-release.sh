@@ -125,15 +125,27 @@ mkdir -p ~/Library/Application\ Support/Maestro
 echo ""
 echo "✅ Installation complete!"
 
-# Note about daemon
-if [ "$DAEMON_WAS_RUNNING" = true ]; then
-    echo ""
-    echo "ℹ️  Daemon was stopped. It will restart automatically when Claude Code needs it."
-fi
-
 # Show version
 echo ""
 echo "Installed: $(/usr/local/bin/maestrod --version 2>/dev/null || echo 'maestrod')"
+
+# Restart daemon if it was running (fully detached)
+if [ "$DAEMON_WAS_RUNNING" = true ]; then
+    echo ""
+    echo "🔄 Restarting daemon..."
+    ( /usr/local/bin/maestrod < /dev/null > /dev/null 2>&1 & disown ) 2>/dev/null
+    sleep 0.5
+    if pgrep -x maestrod > /dev/null; then
+        echo "   ✓ Daemon running in background"
+    else
+        echo "   ⚠ Daemon may need manual start"
+    fi
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Done! You can close this terminal."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 EOF
 
 chmod +x "${DIST_DIR}/install.sh"
