@@ -16,6 +16,12 @@ public struct AgentSession: Codable {
     public var documentsCreated: Int
     public var metadata: [String: String]?
 
+    // Claude Code file watcher fields
+    public var claudeSessionId: String?  // Maps to JSONL filename UUID
+    public var lastFileOffset: Int64     // Byte position in file for incremental reads
+    public var spaceId: UUID?            // Linked Maestro space
+    public var workingDirectory: String? // cwd from Claude Code session
+
     public init(
         id: UUID = UUID(),
         agentName: String,
@@ -27,7 +33,11 @@ public struct AgentSession: Codable {
         tasksCompleted: Int = 0,
         spacesCreated: Int = 0,
         documentsCreated: Int = 0,
-        metadata: [String: String]? = nil
+        metadata: [String: String]? = nil,
+        claudeSessionId: String? = nil,
+        lastFileOffset: Int64 = 0,
+        spaceId: UUID? = nil,
+        workingDirectory: String? = nil
     ) {
         self.id = id
         self.agentName = agentName
@@ -40,6 +50,10 @@ public struct AgentSession: Codable {
         self.spacesCreated = spacesCreated
         self.documentsCreated = documentsCreated
         self.metadata = metadata
+        self.claudeSessionId = claudeSessionId
+        self.lastFileOffset = lastFileOffset
+        self.spaceId = spaceId
+        self.workingDirectory = workingDirectory
     }
 
     /// Duration of the session in seconds
@@ -71,6 +85,10 @@ extension AgentSession: FetchableRecord, PersistableRecord {
         case spacesCreated = "spaces_created"
         case documentsCreated = "documents_created"
         case metadata
+        case claudeSessionId = "claude_session_id"
+        case lastFileOffset = "last_file_offset"
+        case spaceId = "space_id"
+        case workingDirectory = "working_directory"
     }
 
     public init(row: Row) throws {
@@ -106,6 +124,18 @@ extension AgentSession: FetchableRecord, PersistableRecord {
         } else {
             metadata = nil
         }
+
+        // Claude Code file watcher fields
+        claudeSessionId = row[Columns.claudeSessionId]
+        lastFileOffset = row[Columns.lastFileOffset] ?? 0
+
+        if let spaceIdString: String = row[Columns.spaceId] {
+            spaceId = UUID(uuidString: spaceIdString)
+        } else {
+            spaceId = nil
+        }
+
+        workingDirectory = row[Columns.workingDirectory]
     }
 
     public func encode(to container: inout PersistenceContainer) throws {
@@ -132,5 +162,11 @@ extension AgentSession: FetchableRecord, PersistableRecord {
            let string = String(data: data, encoding: .utf8) {
             container[Columns.metadata] = string
         }
+
+        // Claude Code file watcher fields
+        container[Columns.claudeSessionId] = claudeSessionId
+        container[Columns.lastFileOffset] = lastFileOffset
+        container[Columns.spaceId] = spaceId?.uuidString
+        container[Columns.workingDirectory] = workingDirectory
     }
 }

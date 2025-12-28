@@ -253,6 +253,36 @@ public class Database {
                 CREATE INDEX idx_agent_activity_timestamp ON agent_activity(timestamp)
             """)
         }
+
+        // v5: Claude Code file watcher integration
+        migrator.registerMigration("v5") { db in
+            // Add Claude session tracking columns to agent_sessions
+            try db.execute(sql: """
+                ALTER TABLE agent_sessions ADD COLUMN claude_session_id TEXT
+            """)
+
+            try db.execute(sql: """
+                ALTER TABLE agent_sessions ADD COLUMN last_file_offset INTEGER NOT NULL DEFAULT 0
+            """)
+
+            try db.execute(sql: """
+                ALTER TABLE agent_sessions ADD COLUMN space_id TEXT REFERENCES spaces(id) ON DELETE SET NULL
+            """)
+
+            try db.execute(sql: """
+                ALTER TABLE agent_sessions ADD COLUMN working_directory TEXT
+            """)
+
+            // Index for looking up sessions by Claude session ID
+            try db.execute(sql: """
+                CREATE UNIQUE INDEX idx_agent_sessions_claude_id ON agent_sessions(claude_session_id) WHERE claude_session_id IS NOT NULL
+            """)
+
+            // Index for looking up sessions by space
+            try db.execute(sql: """
+                CREATE INDEX idx_agent_sessions_space_id ON agent_sessions(space_id) WHERE space_id IS NOT NULL
+            """)
+        }
     }
 
     // MARK: - Connection Management

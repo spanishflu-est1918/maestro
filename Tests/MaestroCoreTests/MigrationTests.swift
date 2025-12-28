@@ -189,4 +189,128 @@ final class MigrationTests: XCTestCase {
         db.close()
         try? FileManager.default.removeItem(atPath: dbPath)
     }
+
+    // MARK: - v5 Migration Tests (Claude Code File Watcher)
+
+    func testV5MigrationApplied() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+        let dbPath = tempDir.appendingPathComponent("v5-test-\(UUID().uuidString).db").path
+
+        let db = Database(path: dbPath)
+        try db.connect()
+
+        let appliedMigrations = try db.read { db in
+            try String.fetchAll(db, sql: "SELECT identifier FROM grdb_migrations ORDER BY identifier")
+        }
+
+        XCTAssertTrue(appliedMigrations.contains("v5"), "Should have v5 migration applied")
+
+        db.close()
+        try? FileManager.default.removeItem(atPath: dbPath)
+    }
+
+    func testV5AgentSessionsHasClaudeSessionId() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+        let dbPath = tempDir.appendingPathComponent("v5-columns-test-\(UUID().uuidString).db").path
+
+        let db = Database(path: dbPath)
+        try db.connect()
+
+        let columns = try db.read { db in
+            try Row.fetchAll(db, sql: "PRAGMA table_info(agent_sessions)")
+        }
+
+        let columnNames = columns.map { $0["name"] as! String }
+
+        XCTAssertTrue(columnNames.contains("claude_session_id"), "Should have claude_session_id column")
+        XCTAssertTrue(columnNames.contains("last_file_offset"), "Should have last_file_offset column")
+        XCTAssertTrue(columnNames.contains("space_id"), "Should have space_id column")
+        XCTAssertTrue(columnNames.contains("working_directory"), "Should have working_directory column")
+
+        db.close()
+        try? FileManager.default.removeItem(atPath: dbPath)
+    }
+
+    func testV5ClaudeSessionIdIndex() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+        let dbPath = tempDir.appendingPathComponent("v5-index-test-\(UUID().uuidString).db").path
+
+        let db = Database(path: dbPath)
+        try db.connect()
+
+        let indexes = try db.read { db in
+            try Row.fetchAll(db, sql: """
+                SELECT name FROM sqlite_master
+                WHERE type='index' AND tbl_name='agent_sessions'
+            """)
+        }
+
+        let indexNames = indexes.map { $0["name"] as! String }
+
+        XCTAssertTrue(indexNames.contains("idx_agent_sessions_claude_id"), "Should have claude_session_id unique index")
+        XCTAssertTrue(indexNames.contains("idx_agent_sessions_space_id"), "Should have space_id index")
+
+        db.close()
+        try? FileManager.default.removeItem(atPath: dbPath)
+    }
+
+    func testV5LastFileOffsetDefaultValue() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+        let dbPath = tempDir.appendingPathComponent("v5-default-test-\(UUID().uuidString).db").path
+
+        let db = Database(path: dbPath)
+        try db.connect()
+
+        // Insert a session without specifying last_file_offset
+        try db.write { db in
+            try db.execute(sql: """
+                INSERT INTO agent_sessions (id, agent_name, started_at, total_activities, tasks_created, tasks_updated, tasks_completed, spaces_created, documents_created)
+                VALUES ('test-id', 'Test Agent', datetime('now'), 0, 0, 0, 0, 0, 0)
+            """)
+        }
+
+        let offset = try db.read { db in
+            try Int64.fetchOne(db, sql: "SELECT last_file_offset FROM agent_sessions WHERE id = 'test-id'")
+        }
+
+        XCTAssertEqual(offset, 0, "last_file_offset should default to 0")
+
+        db.close()
+        try? FileManager.default.removeItem(atPath: dbPath)
+    }
+
+    func testV5SpaceIdForeignKey() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+        let dbPath = tempDir.appendingPathComponent("v5-fk-test-\(UUID().uuidString).db").path
+
+        let db = Database(path: dbPath)
+        try db.connect()
+
+        // Create a space
+        let spaceId = UUID().uuidString
+        try db.write { db in
+            try db.execute(sql: """
+                INSERT INTO spaces (id, name, color, created_at, last_active_at, archived, track_focus, total_focus_time)
+                VALUES (?, 'Test Space', '#3B82F6', datetime('now'), datetime('now'), 0, 0, 0)
+            """, arguments: [spaceId])
+        }
+
+        // Create session linked to space
+        try db.write { db in
+            try db.execute(sql: """
+                INSERT INTO agent_sessions (id, agent_name, started_at, total_activities, tasks_created, tasks_updated, tasks_completed, spaces_created, documents_created, space_id)
+                VALUES ('session-1', 'Claude Code', datetime('now'), 0, 0, 0, 0, 0, 0, ?)
+            """, arguments: [spaceId])
+        }
+
+        // Verify the link exists
+        let linkedSpaceId = try db.read { db in
+            try String.fetchOne(db, sql: "SELECT space_id FROM agent_sessions WHERE id = 'session-1'")
+        }
+
+        XCTAssertEqual(linkedSpaceId, spaceId)
+
+        db.close()
+        try? FileManager.default.removeItem(atPath: dbPath)
+    }
 }

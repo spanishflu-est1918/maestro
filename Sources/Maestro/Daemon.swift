@@ -9,6 +9,7 @@ private var globalDaemon: Daemon?
 /// Handles process lifecycle and graceful shutdown
 public final class Daemon {
     private var server: MaestroMCPServer?
+    private var sessionWatcher: ClaudeSessionWatcher?
     private var isRunning = false
     private var shutdownContinuation: CheckedContinuation<Void, Never>?
     private let config: Configuration
@@ -47,6 +48,11 @@ public final class Daemon {
         logger?.info("Database initialized and migrations completed")
         isRunning = true
 
+        // Start Claude session watcher
+        logger?.info("Starting Claude session watcher")
+        sessionWatcher = ClaudeSessionWatcher(database: server!.db)
+        sessionWatcher?.start()
+
         logger?.info("Starting MCP server")
         // Start server in background task
         _Concurrency.Task {
@@ -71,6 +77,10 @@ public final class Daemon {
         isRunning = false
 
         logger?.info("Shutting down Maestro daemon")
+
+        // Stop Claude session watcher
+        sessionWatcher?.stop()
+        sessionWatcher = nil
 
         // Clean up server resources
         server = nil
