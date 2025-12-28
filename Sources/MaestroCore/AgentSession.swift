@@ -73,7 +73,7 @@ public struct AgentSession: Codable {
 extension AgentSession: FetchableRecord, PersistableRecord {
     public static let databaseTableName = "agent_sessions"
 
-    enum Columns: String, ColumnExpression {
+    public enum Columns: String, ColumnExpression {
         case id
         case agentName = "agent_name"
         case startedAt = "started_at"

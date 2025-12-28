@@ -50,7 +50,7 @@ extension Space: FetchableRecord, PersistableRecord {
     public static let databaseTableName = "spaces"
 
     // Custom column mapping for snake_case database columns
-    enum Columns: String, ColumnExpression {
+    public enum Columns: String, ColumnExpression {
         case id
         case name
         case path
