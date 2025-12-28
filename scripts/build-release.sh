@@ -83,6 +83,15 @@ set -e
 echo "🎯 Installing Maestro"
 echo ""
 
+# Check if daemon is running
+DAEMON_WAS_RUNNING=false
+if pgrep -x maestrod > /dev/null; then
+    DAEMON_WAS_RUNNING=true
+    echo "📍 Stopping running daemon..."
+    pkill -x maestrod || true
+    sleep 1
+fi
+
 # Install daemon
 echo "📍 Installing daemon to /usr/local/bin..."
 sudo cp bin/maestrod /usr/local/bin/
@@ -91,23 +100,42 @@ sudo chmod +x /usr/local/bin/maestrod
 # Install app
 echo "📱 Installing menu bar app to ~/Applications..."
 mkdir -p ~/Applications
+# Kill app if running to allow replacement
+if pgrep -x maestro-app > /dev/null; then
+    echo "   Closing running app..."
+    pkill -x maestro-app || true
+    sleep 1
+fi
+rm -rf ~/Applications/maestro-app.app
 cp -R app/maestro-app.app ~/Applications/
 
-# Create config directory
-echo "⚙️  Setting up configuration..."
-mkdir -p ~/.maestro/logs
-cp config/config.json ~/.maestro/
+# Create config directory if needed
+if [ ! -d ~/.maestro ]; then
+    echo "⚙️  Setting up configuration..."
+    mkdir -p ~/.maestro/logs
+    cp config/config.json ~/.maestro/
+else
+    echo "⚙️  Config directory exists, preserving settings"
+    mkdir -p ~/.maestro/logs
+fi
 
 # Create database directory
 mkdir -p ~/Library/Application\ Support/Maestro
 
 echo ""
 echo "✅ Installation complete!"
+
+# Restart daemon if it was running
+if [ "$DAEMON_WAS_RUNNING" = true ]; then
+    echo ""
+    echo "🔄 Restarting daemon..."
+    nohup /usr/local/bin/maestrod > /dev/null 2>&1 &
+    echo "   Daemon restarted with new version"
+fi
+
+# Show version
 echo ""
-echo "Next steps:"
-echo "1. Configure MCP server (see docs/SETUP.md)"
-echo "2. Start daemon: maestrod"
-echo "3. Launch app: open ~/Applications/maestro-app.app"
+/usr/local/bin/maestrod --version 2>/dev/null || true
 EOF
 
 chmod +x "${DIST_DIR}/install.sh"
