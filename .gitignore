@@ -1,23 +1,2 @@
 .DS_Store
-/.build
-/Packages
-xcuserdata/
-DerivedData/
-.swiftpm/configuration/registries.json
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-.netrc
-
-# Development artifacts
-.claude/
 *.log
-/tmp/
-
-# Release planning docs (not part of code)
-RELEASE_PLAN.md
-RELEASE_NOTES.md
-BUILD.md
-TEST-QUICK.md
-
-# Design resources (use Sources/MaestroUI/Resources/)
-/Resources/maestro-*.png
-/Resources/maestro-*.md

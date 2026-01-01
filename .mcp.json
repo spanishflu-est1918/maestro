@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "testmcp": {
-      "command": "/Users/gorkolas/Documents/www/maestro/.build/release/testmcp",
-      "args": []
-    }
-  }
-}
