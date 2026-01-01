@@ -8,9 +8,11 @@ license: Complete terms in LICENSE.txt
 
 ## Overview
 
-Maestro is a native macOS headless daemon with MCP server integration. It provides ambient awareness of work state through a menu bar interface and exposes all functionality via MCP tools for Claude to query and manipulate.
+Maestro is a cloud-based work state system with REST API at `maestro.1918.gripe`. It provides ambient awareness of work state and exposes all functionality via API for Claude to query and manipulate.
 
 **The paradigm**: Maestro is the backend. You (Claude) are the frontend. The user juggles multiple worlds simultaneously. You understand which world they're in and synthesize what matters right now.
+
+**API Access**: Use `curl` via Bash tool. See [API.md](./API.md) for full endpoint reference.
 
 **Keywords**: task management, project context, work state, context switching, prioritization, surfacing, multi-project, synthesis, cognitive substrate
 
@@ -25,6 +27,7 @@ Query Maestro when the user:
 - Wants to understand priorities
 - Is brain-dumping about their life/work
 - Wants to organize or restructure their worlds
+- Wants to trigger autonomous work on a GitHub repo (agent orchestration)
 
 ## Core Concepts
 
@@ -135,29 +138,52 @@ Some content requires context to discuss properly. When a space or project has s
 
 ## Quick Reference
 
+All operations use `curl` via Bash. Auth header: `Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ`
+
 ### Understanding Worlds
-- `maestro_list_spaces()` — See all spaces
-- `maestro_get_space(id)` — Space details
-- `maestro_list_spaces(parentId)` — Get children of a space
+```bash
+# List all spaces
+curl -s "https://maestro.1918.gripe/api/spaces" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+
+# Get space details
+curl -s "https://maestro.1918.gripe/api/spaces/<id>" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+
+# Get children of a space
+curl -s "https://maestro.1918.gripe/api/spaces?parentId=<id>" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+```
 
 ### Synthesizing State
-- `maestro_get_status()` — Health across all worlds (menu bar state)
-- `maestro_get_surfaced_tasks(spaceId, limit)` — Most important items
-- `maestro_list_tasks(spaceId, status)` — All tasks in a space
-- `maestro_get_default_document(spaceId)` — Read State of the World
+```bash
+# List tasks in a space (sorted by priority)
+curl -s "https://maestro.1918.gripe/api/tasks?spaceId=<id>" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+
+# Get all tasks (for status overview)
+curl -s "https://maestro.1918.gripe/api/tasks" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+
+# Get documents for a space
+curl -s "https://maestro.1918.gripe/api/documents?spaceId=<id>" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+```
 
 ### Managing Work
-- `maestro_create_space(name, color, parentId?, tags?)` — Create a world
-- `maestro_create_task(spaceId, title, description?, priority?, status?)` — Create work item
-- `maestro_create_document(spaceId, title, content)` — Create knowledge
-- `maestro_set_default_document(id)` — Set State of the World doc
-- `maestro_complete_task(id)` — Mark done
-- `maestro_archive_task(id)` — Archive completed work
+```bash
+# Create a space
+curl -s "https://maestro.1918.gripe/api/spaces" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" -d '{"name":"Name","color":"#1ABC9C"}'
 
-### Agent Activity
-- `maestro_start_agent_session(agentName)` — Begin tracking
-- `maestro_log_agent_activity(sessionId, activityType, resourceType, ...)` — Log events
-- `maestro_end_agent_session(sessionId)` — End tracking
+# Create a task
+curl -s "https://maestro.1918.gripe/api/tasks" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" -d '{"spaceId":"<id>","title":"Task","priority":"medium"}'
+
+# Complete a task
+curl -s -X PUT "https://maestro.1918.gripe/api/tasks/<id>" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" -d '{"status":"done"}'
+
+# Create a document
+curl -s "https://maestro.1918.gripe/api/documents" -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" -d '{"spaceId":"<id>","title":"Title","content":"..."}'
+```
+
+See [API.md](./API.md) for complete endpoint reference.
 
 ---
 
@@ -207,9 +233,36 @@ This is a nudge, not a rule. Claude decides when it's useful.
 
 ---
 
-## Troubleshooting
+## Agent Orchestration
 
-**"Server not available" error**: If Maestro MCP tools return this error, Claude Code needs to be restarted. The daemon may have been updated or crashed. Tell the user: "Maestro server isn't responding — try restarting Claude Code (`/exit` then relaunch)."
+Maestro can trigger autonomous Claude Code agents to work on GitHub repositories.
+
+### When to Use
+
+- User wants work done on a codebase without doing it themselves
+- A Maestro task requires code changes
+- User says "fix this", "implement that", "run the agent on repo X"
+
+### How to Trigger
+
+```bash
+curl -s -X POST "https://maestro.1918.gripe/api/agent/run" \
+  -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" \
+  -d '{"repo": "owner/repo", "instruction": "What to do"}'
+```
+
+### Example Workflow
+
+1. User has a task in Maestro: "Fix login bug in auth service"
+2. Claude triggers agent: `{"repo": "company/auth-service", "instruction": "Fix the login bug where users get 401 errors"}`
+3. Agent clones repo, analyzes code, makes fixes, returns summary
+4. Claude updates the Maestro task with results
+
+### Response Handling
+
+- `success: true` → Report the `output` to user, mark task done if applicable
+- `success: false` → Report the `error`, keep task open, suggest next steps
 
 ---
 
