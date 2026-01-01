@@ -47,8 +47,17 @@ curl -s "https://maestro.1918.gripe/api/spaces/<id>" \
 curl -s "https://maestro.1918.gripe/api/spaces" \
   -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
   -H "Content-Type: application/json" \
-  -d '{"name": "Space Name", "color": "#1ABC9C", "parentId": null, "tags": []}'
+  -d '{"name": "Space Name", "color": "#1ABC9C", "parentId": null, "repo": "owner/repo", "tags": []}'
 ```
+
+Fields:
+- `name` (required)
+- `color`: hex color code (default: #6366f1)
+- `parentId`: UUID of parent space or null
+- `repo`: GitHub repository in `owner/repo` format (for agent orchestration)
+- `tags`: array of strings
+- `archived`: boolean
+- `trackFocus`: boolean
 
 **Update a space:**
 ```bash
