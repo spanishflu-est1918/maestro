@@ -283,7 +283,6 @@ Engineering (root)
 
 - Create tasks within space
 - Add documents for context
-- Link to Linear issues
 - Monitor via menu bar
 
 ### 3. Completion

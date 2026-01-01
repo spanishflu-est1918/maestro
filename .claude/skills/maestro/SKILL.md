@@ -271,5 +271,3 @@ curl -s -X POST "https://maestro.1918.gripe/api/agent/run" \
 - [REFERENCE.md](./REFERENCE.md) — Technical details and query patterns
 - [TASK_MANAGEMENT.md](./TASK_MANAGEMENT.md) — Task lifecycle and best practices
 - [SPACE_ORGANIZATION.md](./SPACE_ORGANIZATION.md) — Space hierarchy patterns
-- [LINEAR_WORKFLOW.md](./LINEAR_WORKFLOW.md) — Linear integration
-- [AGENT_MONITORING.md](./AGENT_MONITORING.md) — Agent session tracking

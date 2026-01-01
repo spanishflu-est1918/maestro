@@ -71,7 +71,7 @@ Urgent
 {
   "id": "task-uuid",
   "title": "Implement GraphQL subscriptions for real-time updates",
-  "description": "Add WebSocket-based GraphQL subscriptions to support real-time dashboard updates.\n\n**Requirements:**\n- Support subscription queries\n- Handle reconnection logic\n- Add error handling\n- Update client library\n\n**Acceptance:**\n- Dashboard updates in real-time\n- Reconnects automatically\n- No memory leaks\n\n**Related:** Linear ENG-456",
+  "description": "Add WebSocket-based GraphQL subscriptions to support real-time dashboard updates.\n\n**Requirements:**\n- Support subscription queries\n- Handle reconnection logic\n- Add error handling\n- Update client library\n\n**Acceptance:**\n- Dashboard updates in real-time\n- Reconnects automatically\n- No memory leaks",
   "status": "todo",
   "priority": "high",
   "dueDate": "2025-12-30"
@@ -140,7 +140,6 @@ This automatically sets status to "done" and records completion time.
 - ✅ Tests passing
 - ✅ Code reviewed (if applicable)
 - ✅ Documentation updated
-- ✅ Linked Linear issues updated
 
 **After completion**:
 - Review outcomes (what worked, what didn't)

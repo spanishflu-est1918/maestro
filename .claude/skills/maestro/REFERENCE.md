@@ -35,7 +35,6 @@ Each world has:
 - **Documents** (notes, specs, knowledge)
 - **State of the World doc** (default document with current context)
 - **Priority signals** (due dates, urgency markers)
-- **Team coordination** (Linear integration if used)
 
 ### World Switching Rules
 
@@ -159,13 +158,6 @@ Intelligent prioritization within context considering:
 - Recent activity
 
 Query this to answer "What matters most in this context?"
-
-### Linear Integration
-
-Team coordination layer (if used):
-- Links to Linear issues for team visibility
-- Track completion metrics (last 24h)
-- Separate concern from Maestro's execution tracking
 
 ### Menu Bar States
 
@@ -309,10 +301,6 @@ Frame recommendations as world choices:
 - `maestro_list_documents(spaceId)` - Knowledge in world
 - `maestro_get_document(id)` - Specific doc content
 - `maestro_get_default_document(spaceId)` - Read State of the World
-
-**Agent Activity:**
-- `maestro_list_agent_sessions()` - AI work sessions
-- `maestro_get_agent_metrics()` - Usage patterns
 
 ---
 

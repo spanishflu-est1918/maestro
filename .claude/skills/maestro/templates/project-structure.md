@@ -320,19 +320,6 @@ Projects (Root)
     └── Ongoing tasks
 ```
 
-### From Tool-Specific to Maestro
-
-**Before** (Linear/Jira/Trello):
-- All tasks in external tool
-- No local tracking
-- Limited customization
-
-**After** (Maestro):
-- Core tasks in Maestro
-- Link to external tools for team visibility
-- Custom workflows and surfacing
-- Agent activity tracking
-
 ## Best Practices
 
 ### Naming Conventions

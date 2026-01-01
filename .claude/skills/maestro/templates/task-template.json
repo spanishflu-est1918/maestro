@@ -1,13 +1,13 @@
 {
   "feature": {
     "title": "[FEATURE] User-facing description",
-    "description": "**User Story:**\nAs a [user type], I want [goal] so that [benefit]\n\n**Requirements:**\n- Must have: Core functionality\n- Should have: Important additions\n- Could have: Nice-to-have enhancements\n\n**Acceptance Criteria:**\n- [ ] Criterion 1\n- [ ] Criterion 2\n- [ ] Criterion 3\n\n**Technical Approach:**\nTBD\n\n**Testing Plan:**\nTBD\n\n**Linear Issue:** [Link if applicable]",
+    "description": "**User Story:**\nAs a [user type], I want [goal] so that [benefit]\n\n**Requirements:**\n- Must have: Core functionality\n- Should have: Important additions\n- Could have: Nice-to-have enhancements\n\n**Acceptance Criteria:**\n- [ ] Criterion 1\n- [ ] Criterion 2\n- [ ] Criterion 3\n\n**Technical Approach:**\nTBD\n\n**Testing Plan:**\nTBD",
     "status": "inbox",
     "priority": "medium"
   },
   "bug": {
     "title": "[BUG] Brief description of issue",
-    "description": "**Reproduction Steps:**\n1. Go to page X\n2. Click button Y\n3. Observe error Z\n\n**Expected Behavior:**\nShould do A\n\n**Actual Behavior:**\nDoes B instead\n\n**Environment:**\n- Browser: Chrome 120\n- OS: macOS 14\n- Version: 1.2.3\n\n**Error Details:**\n```\n[Paste error message/stack trace]\n```\n\n**Fix Plan:**\nTBD after investigation\n\n**Linear Issue:** [Link if applicable]",
+    "description": "**Reproduction Steps:**\n1. Go to page X\n2. Click button Y\n3. Observe error Z\n\n**Expected Behavior:**\nShould do A\n\n**Actual Behavior:**\nDoes B instead\n\n**Environment:**\n- Browser: Chrome 120\n- OS: macOS 14\n- Version: 1.2.3\n\n**Error Details:**\n```\n[Paste error message/stack trace]\n```\n\n**Fix Plan:**\nTBD after investigation",
     "status": "todo",
     "priority": "high"
   },
