@@ -220,59 +220,80 @@ The old `maestro_get_status()` and `maestro_get_surfaced_tasks()` need to be com
 
 ---
 
-### Agent Orchestration
+## Agent Execution
 
-**Run Claude Code in a sandbox:**
+Run Claude Code agents against repositories. Uses your Max subscription — no API costs.
 
-Triggers an autonomous Claude Code agent to work on a GitHub repository. The agent runs in an isolated E2B sandbox with full Claude Code capabilities.
-
+**Run an agent:**
 ```bash
-curl -s -X POST "https://maestro.1918.gripe/api/agent/run" \
+curl -s "https://maestro.1918.gripe/api/agent/run" \
   -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
   -H "Content-Type: application/json" \
-  -d '{
-    "repo": "owner/repo-name",
-    "instruction": "Your task instruction here"
-  }'
+  -d '{"repo": "spanishflu-est1918/maestro", "instruction": "Add a health check endpoint"}'
 ```
 
-**Request fields:**
-- `repo` (required): GitHub repository in `owner/repo` format
-- `instruction` (required): Natural language instruction for Claude Code
-- `taskId` (optional): Maestro task ID to associate with this run
+Fields:
+- `repo` (required): GitHub repo in format `owner/repo`
+- `instruction` (required): What the agent should do
+- `taskId` (optional): Link execution to a Maestro task
 
-**Response:**
+Response:
 ```json
 {
   "success": true,
-  "output": "Claude Code's response and work summary",
-  "sessionId": "e2b-session-id"
+  "output": "Created /api/health endpoint that returns...",
+  "sessionId": "inquhwlppd3nhrihjwjpa"
 }
 ```
 
-**Error response:**
-```json
-{
-  "success": false,
-  "error": "Error description"
-}
-```
+The `sessionId` can be used to resume sessions (future feature).
 
-**Notes:**
-- Supports both public and private repositories (uses configured GitHub token)
-- Agent has full Claude Code capabilities including file editing, bash, etc.
-- Timeout: 8 minutes for Claude Code execution
-- Uses `--dangerously-skip-permissions` for non-interactive execution
+**Known repos:**
+- `spanishflu-est1918/maestro` — Maestro skill and cloud app
 
-**Example: Fix a bug**
+---
+
+## When to Use Agent Execution
+
+Use `/api/agent/run` when:
+- Task requires code changes in a repo
+- Work can run in background without supervision
+- You have a clear, scoped instruction
+
+Don't use when:
+- You need interactive back-and-forth
+- Task requires access to local files
+- Instruction is vague or exploratory
+
+---
+
+## Example: Agent Workflow
+
+1. Create a task in Maestro
+2. Trigger agent with task context
+3. Agent executes and returns output
+4. Update task with results
+
 ```bash
-curl -s -X POST "https://maestro.1918.gripe/api/agent/run" \
+# 1. Create task
+TASK=$(curl -s "https://maestro.1918.gripe/api/tasks" \
   -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
   -H "Content-Type: application/json" \
-  -d '{
-    "repo": "spanishflu-est1918/my-project",
-    "instruction": "Fix the TypeScript error in src/utils.ts"
-  }'
+  -d '{"spaceId": "af05622b-e874-4066-b765-1a77352c8d07", "title": "Add health endpoint", "status": "inProgress"}')
+
+TASK_ID=$(echo $TASK | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+
+# 2. Run agent
+RESULT=$(curl -s "https://maestro.1918.gripe/api/agent/run" \
+  -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" \
+  -d "{\"repo\": \"spanishflu-est1918/maestro\", \"instruction\": \"Add health check endpoint at /api/health\", \"taskId\": \"$TASK_ID\"}")
+
+# 3. Mark complete
+curl -s -X PUT "https://maestro.1918.gripe/api/tasks/$TASK_ID" \
+  -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "done"}'
 ```
 
 ---
