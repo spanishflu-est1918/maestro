@@ -266,6 +266,29 @@ curl -s -X POST "https://maestro.1918.gripe/api/agent/run" \
 
 ---
 
+## Multi-Tenancy
+
+Maestro supports multiple users with isolated data. Each API key sees only its own spaces, tasks, and documents.
+
+### Adding a New User
+
+```bash
+# Create a new API key for a friend
+curl -s "https://maestro.1918.gripe/api/keys" \
+  -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Friend Name"}'
+```
+
+The response includes the key — **store it immediately, it won't be shown again**.
+
+Give your friend:
+1. The API key (starts with `msk_`)
+2. Instructions to install this skill in their Claude Code
+3. Update their skill's API.md with their key
+
+---
+
 ## Related Documentation
 
 - [REFERENCE.md](./REFERENCE.md) — Technical details and query patterns

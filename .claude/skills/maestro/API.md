@@ -178,6 +178,49 @@ curl -s -X DELETE "https://maestro.1918.gripe/api/documents/<id>" \
 
 ---
 
+### API Keys (Multi-Tenancy)
+
+Maestro supports multiple users. Each API key has isolated data — spaces, tasks, and documents are scoped per key.
+
+**List API keys:**
+```bash
+curl -s "https://maestro.1918.gripe/api/keys" \
+  -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+```
+
+Returns names and metadata only (not the actual keys).
+
+**Create a new API key:**
+```bash
+curl -s "https://maestro.1918.gripe/api/keys" \
+  -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Friend Name"}'
+```
+
+Response:
+```json
+{
+  "id": "uuid",
+  "name": "Friend Name",
+  "key": "msk_xxxxxx...",
+  "createdAt": "2024-01-10T...",
+  "message": "Store this key securely - it won't be shown again!"
+}
+```
+
+**IMPORTANT:** The `key` is only returned once at creation. Store it immediately.
+
+**Revoke an API key:**
+```bash
+curl -s -X DELETE "https://maestro.1918.gripe/api/keys/<id>" \
+  -H "Authorization: Bearer msk_uqCrYGhu9N_0wMgQ3JOzUzzF_-Qs68GQ"
+```
+
+Note: Cannot revoke your own key.
+
+---
+
 ## MCP Tool Mapping
 
 Old MCP tool → New API call:
